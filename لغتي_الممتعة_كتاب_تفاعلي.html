@@ -988,10 +988,10 @@ function renderLetterDetail(i){
 /* ====================== وحدة الحركات ====================== */
 function renderHarakat(){
   let h1="";
-  HARAKAT.forEach(h=>{
+  HARAKAT.forEach((h,i)=>{
     h1+='<div class="haraka-card"><div class="h-ex">'+h.ex+'</div>'+
     '<div class="h-name">'+h.name+'</div><div class="h-sym">'+h.sym+'</div>'+
-    '<button class="btn small orange" onclick="speak(\''+h.ex+'\')">🔊 استمع</button></div>';
+    '<button class="btn small orange" onclick="playOrSpeak(\'haraka_'+i+'\',\''+h.ex+'\')">🔊 استمع</button></div>';
   });
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>✨ الحركات القصيرة</h2></div>'+
   '<p class="center" style="color:#5c548c;margin-top:0">الحركات تغيّر صوت الحرف — استمع إلى حرف الباء مع كل حركة</p>'+
@@ -1001,12 +1001,12 @@ function renderHarakat(){
 /* ====================== المدود لحالها ====================== */
 function renderMadd(){
   let cards="";
-  MUDOOD.forEach(m=>{
+  MUDOOD.forEach((m,i)=>{
     cards+='<div class="haraka-card"><div class="h-ex">'+m.ex+'</div>'+
     '<div class="h-name">'+m.name+'</div>'+
     '<div style="font-size:1.1rem;font-weight:700;color:#5c548c">'+m.word+' '+m.emoji+'</div>'+
-    '<button class="btn small orange" onclick="speak(\''+m.ex+'\')">🔊 المقطع</button> '+
-    '<button class="btn small pink" onclick="speak(\''+m.word+'\')">🔊 الكلمة</button></div>';
+    '<button class="btn small orange" onclick="playOrSpeak(\'madd_syl_'+i+'\',\''+m.ex+'\')">🔊 المقطع</button> '+
+    '<button class="btn small pink" onclick="playOrSpeak(\'madd_word_'+i+'\',\''+m.word+'\')">🔊 الكلمة</button></div>';
   });
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🌊 المدود</h2></div>'+
   '<p class="center" style="color:#5c548c">في المد نُطيل صوت الحرف — لاحظ المقطع من الكلمة نفسها: بَا من بَاب، حُو من حُوت، فِي من فِيل</p>'+
