@@ -820,7 +820,10 @@ function go(name,arg){
     case "gOdd":startOdd();break;
     case "gPattern":startPattern();break;
     case "gCount":startCount();break;
-    case "gMemory":startMemory();break;
+    case "gMemory":renderMemoryLevels();break;
+    case "gMemoryPlay":startMemory(arg);break;
+    case "gXO":startXO();break;
+    case "gPenalty":startPenalty();break;
     case "final":startFinal();break;
     case "cert":renderCert();break;
     case "guide":renderGuide();break;
@@ -912,13 +915,15 @@ const UNITS=[
  {id:"gSenses",icon:"🖐️",title:"الحواس الخمس",desc:"أرى، أسمع، أشم، أتذوق، ألمس",key:"gSenses"},
  {id:"gAnimalSounds",icon:"🔊",title:"أصوات الحيوانات",desc:"استمع لصوت الحيوان وحدد صاحبه",key:"gAnimalSounds"},
  {id:"gBabyAnimals",icon:"🐣",title:"صغار الحيوانات",desc:"ما اسم صغير كل حيوان؟",key:"gBabyAnimals"},
- {id:"gMemory",icon:"🃏",title:"لعبة الذاكرة",desc:"قوِّ ذاكرتك بمطابقة البطاقات",key:"gMemory"},
+ {id:"gMemory",icon:"🃏",title:"لعبة الذاكرة",desc:"٧ مراحل متدرجة الصعوبة",key:null},
+ {id:"gXO",icon:"❌",title:"إكس أو",desc:"العب ضد الكمبيوتر — ٣ جولات",key:"gXO"},
+ {id:"gPenalty",icon:"⚽",title:"ضربات الجزاء",desc:"سجّل أكبر عدد من الأهداف",key:"gPenalty"},
  {id:"final",icon:"🏆",title:"الاختبار الختامي",desc:"اختبر ما تعلمته ونل الشهادة",key:"final"},
  {id:"cert",icon:"🎖️",title:"شهادة التفوق",desc:"شهادتك بعد اجتياز الاختبار",key:null},
  {id:"report",icon:"📋",title:"تقرير المعلم",desc:"ملخص أداء الطالب للطباعة",key:null},
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
-const MAX_STARS=42*3;
+const MAX_STARS=50*3;
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -1770,11 +1775,137 @@ function wbFinish(){
   '<div class="detail-nav mt"><button class="btn green" onclick="go(\'gBuild\')">🔄 إعادة اللعب</button>'+
   '<button class="btn ghost" onclick="go(\'home\')">🏠 الرئيسية</button></div></div>';
 }
+/* ====================== إكس أو ====================== */
+const XO_LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let XO=null;
+function startXO(){
+  XO={board:Array(9).fill(null),wins:0,round:1,totalRounds:3,gameOver:false};
+  renderXO();
+}
+function xoWinner(b){
+  for(const l of XO_LINES){ if(b[l[0]]&&b[l[0]]===b[l[1]]&&b[l[1]]===b[l[2]]) return b[l[0]]; }
+  return b.every(x=>x)? "draw":null;
+}
+function xoBestMove(b){
+  for(let i=0;i<9;i++){ if(!b[i]){ b[i]="O"; if(xoWinner(b)==="O"){b[i]=null;return i;} b[i]=null; } }
+  for(let i=0;i<9;i++){ if(!b[i]){ b[i]="X"; if(xoWinner(b)==="X"){b[i]=null;return i;} b[i]=null; } }
+  if(!b[4])return 4;
+  const corners=[0,2,6,8].filter(i=>!b[i]);
+  if(corners.length) return corners[Math.floor(Math.random()*corners.length)];
+  const rest=b.map((v,i)=>v?null:i).filter(i=>i!==null);
+  return rest.length? rest[Math.floor(Math.random()*rest.length)]:-1;
+}
+function renderXO(){
+  let cells="";
+  XO.board.forEach((v,i)=>{
+    cells+='<button class="wb-tile" style="width:70px;height:70px;font-size:2.4rem" onclick="xoMove('+i+')" '+((v||XO.gameOver)?"disabled":"")+'>'+(v==="X"?"❌":v==="O"?"⭕":"")+'</button>';
+  });
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>❌⭕ إكس أو</h2></div>'+
+  '<p class="center" style="color:#5c548c">جولة '+toArNum(XO.round)+' من '+toArNum(XO.totalRounds)+' — أنت ❌ والكمبيوتر ⭕ — فوزك: '+toArNum(XO.wins)+'</p>'+
+  '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:240px;margin:14px auto">'+cells+'</div>'+
+  '<div class="q-explain center" id="q-explain"></div>';
+}
+function xoMove(i){
+  if(XO.gameOver||XO.board[i])return;
+  XO.board[i]="X";
+  let w=xoWinner(XO.board);
+  if(!w){
+    const ai=xoBestMove(XO.board);
+    if(ai!==-1)XO.board[ai]="O";
+    w=xoWinner(XO.board);
+  }
+  renderXO();
+  if(w){
+    XO.gameOver=true;
+    const ex=document.getElementById("q-explain");
+    if(w==="X"){XO.wins++;soundWin();if(ex)ex.textContent="🎉 فزت!";}
+    else if(w==="O"){soundWrong();if(ex)ex.textContent="😅 خسرت هالمرة، حاول تاني";}
+    else{soundCorrect();if(ex)ex.textContent="🤝 تعادل!";}
+    setTimeout(()=>{
+      if(XO.round>=XO.totalRounds)xoFinish();
+      else{XO.round++;XO.board=Array(9).fill(null);XO.gameOver=false;renderXO();}
+    },1400);
+  }
+}
+function xoFinish(){
+  const st=XO.wins>=2?3:XO.wins>=1?2:1;
+  setStars("gXO",st);
+  soundWin();confetti();praise();
+  app.innerHTML='<div class="result-box">'+
+  '<div style="font-size:3rem">🏆</div>'+
+  '<div class="r-stars">'+"⭐".repeat(st)+"☆".repeat(3-st)+'</div>'+
+  '<div class="r-msg">فزت '+toArNum(XO.wins)+' من '+toArNum(XO.totalRounds)+' جولات</div>'+
+  '<div class="detail-nav mt"><button class="btn green" onclick="go(\'gXO\')">🔄 إعادة اللعب</button>'+
+  '<button class="btn ghost" onclick="go(\'home\')">🏠 الرئيسية</button></div></div>';
+}
+/* ====================== ضربات الجزاء ====================== */
+let PEN=null;
+function startPenalty(){
+  PEN={kick:0,total:5,goals:0,locked:false};
+  renderPenalty();
+}
+function renderPenalty(){
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>⚽ ضربات الجزاء</h2></div>'+
+  '<p class="center" style="color:#5c548c">ركلة '+toArNum(PEN.kick+1)+' من '+toArNum(PEN.total)+' — أهدافك: '+toArNum(PEN.goals)+'</p>'+
+  '<div class="center" style="font-size:4rem">🥅</div>'+
+  '<p class="center" style="font-weight:800">اختر جهة الركلة</p>'+
+  '<div class="center" style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">'+
+  '<button class="btn blue" onclick="penKick(\'left\')">⬅️ يسار</button>'+
+  '<button class="btn orange" onclick="penKick(\'mid\')">⬆️ منتصف</button>'+
+  '<button class="btn pink" onclick="penKick(\'right\')">➡️ يمين</button>'+
+  '</div>'+
+  '<div class="q-explain center mt" id="q-explain"></div>';
+}
+function penKick(dir){
+  if(PEN.locked)return;
+  PEN.locked=true;
+  const dirs=["left","mid","right"];
+  const keeper=dirs[Math.floor(Math.random()*3)];
+  const scored=keeper!==dir;
+  if(scored){PEN.goals++;soundCorrect();}else{soundWrong();}
+  const ex=document.getElementById("q-explain");
+  if(ex)ex.textContent=scored?"⚽ هـــدف!":"🧤 تصدى لها الحارس!";
+  setTimeout(()=>{
+    PEN.kick++;
+    PEN.locked=false;
+    if(PEN.kick>=PEN.total)penFinish(); else renderPenalty();
+  },1200);
+}
+function penFinish(){
+  const st=PEN.goals>=4?3:PEN.goals>=2?2:1;
+  setStars("gPenalty",st);
+  soundWin();confetti();praise();
+  app.innerHTML='<div class="result-box">'+
+  '<div style="font-size:3rem">⚽</div>'+
+  '<div class="r-stars">'+"⭐".repeat(st)+"☆".repeat(3-st)+'</div>'+
+  '<div class="r-msg">سجّلت '+toArNum(PEN.goals)+' من '+toArNum(PEN.total)+' أهداف!</div>'+
+  '<div class="detail-nav mt"><button class="btn green" onclick="go(\'gPenalty\')">🔄 إعادة اللعب</button>'+
+  '<button class="btn ghost" onclick="go(\'home\')">🏠 الرئيسية</button></div></div>';
+}
 /* ====================== لعبة الذاكرة ====================== */
+const MEM_LEVELS=[
+ {n:2,label:"المرحلة الأولى"},{n:3,label:"المرحلة الثانية"},{n:4,label:"المرحلة الثالثة"},
+ {n:5,label:"المرحلة الرابعة"},{n:6,label:"المرحلة الخامسة"},{n:7,label:"المرحلة السادسة"},
+ {n:8,label:"المرحلة السابعة"}
+];
 let MEM=null;
-function startMemory(){
-  const cards=shuffle(MEM_EMOJIS.concat(MEM_EMOJIS)).map((e,i)=>({e:e,id:i,flipped:false,matched:false}));
-  MEM={cards:cards,open:[],moves:0,lock:false};
+function renderMemoryLevels(){
+  let cards="";
+  MEM_LEVELS.forEach((lv,i)=>{
+    const s=P.stars["gMemoryL"+i]||0;
+    cards+='<div class="unit-card" onclick="go(\'gMemoryPlay\','+i+')">'+
+      '<div class="u-icon">🃏</div><h3>'+lv.label+'</h3><p>'+toArNum(lv.n)+' أزواج ('+toArNum(lv.n*2)+' مربع)</p>'+
+      '<div class="u-stars">'+"⭐".repeat(s)+"☆".repeat(3-s)+'</div></div>';
+  });
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🃏 لعبة الذاكرة</h2></div>'+
+  '<p class="center" style="color:#5c548c">اختر المرحلة — كل مرحلة أصعب وفيها مربعات أكثر من اللي قبلها</p>'+
+  '<div class="units">'+cards+'</div>';
+}
+function startMemory(levelIdx){
+  const lv=MEM_LEVELS[levelIdx];
+  const emojis=shuffle(MEM_EMOJIS).slice(0,lv.n);
+  const cards=shuffle(emojis.concat(emojis)).map((e,i)=>({e:e,id:i,flipped:false,matched:false}));
+  MEM={cards:cards,open:[],moves:0,lock:false,levelIdx:levelIdx,pairs:lv.n,label:lv.label};
   renderMemory();
 }
 function renderMemory(){
@@ -1783,7 +1914,7 @@ function renderMemory(){
     const cls=c.matched?"mem-card matched":c.flipped?"mem-card flipped":"mem-card";
     grid+='<button class="'+cls+'" onclick="memFlip('+i+')">'+((c.flipped||c.matched)? c.e:"؟")+'</button>';
   });
-  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🃏 لعبة الذاكرة</h2></div>'+
+  app.innerHTML='<div class="screen-title"><button class="btn small ghost" onclick="go(\'gMemory\')">→ المراحل</button><h2>🃏 '+MEM.label+'</h2></div>'+
   '<p class="center" style="color:#5c548c">اقلب البطاقات وطابق كل صورتين متشابهتين — المحاولات: '+toArNum(MEM.moves)+'</p>'+
   '<div class="mem-grid">'+grid+'</div>';
 }
@@ -1810,15 +1941,18 @@ function memFlip(i){
   }
 }
 function memFinish(){
-  const st=MEM.moves<=12?3:MEM.moves<=18?2:1;
-  setStars("gMemory",st);
+  const key="gMemoryL"+MEM.levelIdx;
+  const st=MEM.moves<=Math.ceil(MEM.pairs*1.5)?3:MEM.moves<=Math.ceil(MEM.pairs*2.5)?2:1;
+  setStars(key,st);
   soundWin();confetti();praise();
+  const nextIdx=MEM.levelIdx+1;
+  const nextBtn=(nextIdx<MEM_LEVELS.length)? '<button class="btn blue" onclick="go(\'gMemoryPlay\','+nextIdx+')">➡️ المرحلة التالية</button>':"";
   app.innerHTML='<div class="result-box">'+
   '<div style="font-size:3rem">🎉</div>'+
   '<div class="r-stars">'+"⭐".repeat(st)+"☆".repeat(3-st)+'</div>'+
   '<div class="r-msg">ذاكرة رائعة! طابقت كل البطاقات</div>'+
   '<div class="r-score">عدد المحاولات: '+toArNum(MEM.moves)+'</div>'+
-  '<div class="detail-nav mt"><button class="btn green" onclick="go(\'gMemory\')">🔄 إعادة اللعب</button>'+
+  '<div class="detail-nav mt"><button class="btn green" onclick="go(\'gMemoryPlay\','+MEM.levelIdx+')">🔄 إعادة اللعب</button>'+nextBtn+
   '<button class="btn ghost" onclick="go(\'home\')">🏠 الرئيسية</button></div></div>';
 }
 /* ====================== الشهادة ====================== */
@@ -2012,7 +2146,11 @@ const REPORT_ROWS=[
  ["English: Fruit Basket","gEnFruits"],["English: Animals","gEnAnimals"],
  ["التعرف على المشاعر","gEmotions"],["أكمل الإيقاع","gRhythm"],
  ["الأضداد","gOpposites"],["الحواس الخمس","gSenses"],["أصوات الحيوانات","gAnimalSounds"],["صغار الحيوانات","gBabyAnimals"],
- ["لعبة الذاكرة","gMemory"],["الاختبار الختامي","final"]
+ ["الذاكرة - المرحلة ١","gMemoryL0"],["الذاكرة - المرحلة ٢","gMemoryL1"],["الذاكرة - المرحلة ٣","gMemoryL2"],
+ ["الذاكرة - المرحلة ٤","gMemoryL3"],["الذاكرة - المرحلة ٥","gMemoryL4"],["الذاكرة - المرحلة ٦","gMemoryL5"],
+ ["الذاكرة - المرحلة ٧","gMemoryL6"],
+ ["إكس أو","gXO"],["ضربات الجزاء","gPenalty"],
+ ["الاختبار الختامي","final"]
 ];
 function renderReport(){
   let trs="";
