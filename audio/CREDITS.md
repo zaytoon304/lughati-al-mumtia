@@ -25,7 +25,6 @@
 | sound_18.mp3 | غراب | [Corvus_corone_-_Carrion_Crow_XC511943.mp3](https://commons.wikimedia.org/wiki/File:Corvus_corone_-_Carrion_Crow_XC511943.mp3) | CC BY-SA 4.0 |
 | sound_19.mp3 | ثعلب | [Vulpes_vulpes,_Slovakia_XC108315.mp3](https://commons.wikimedia.org/wiki/File:Vulpes_vulpes,_at_Henclov%C3%A1,_Slovakia_XC108315.mp3) | CC BY-SA 4.0 |
 | sound_20.mp3 | بطريق | [Little_Penguin_calls_at_St_Kilda_Breakwater.ogg](https://commons.wikimedia.org/wiki/File:20091121_Little_Penguin_calls_at_St_Kilda_Breakwater.ogg) | CC BY 3.0 |
-| sound_21.mp3 | خنزير | [Mudchute_pig_1.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_pig_1.ogg) | CC BY-SA 3.0 |
 
 بعض الرخص (CC BY / CC BY-SA) تشترط ذكر المصدر عند إعادة النشر — هذا الملف يُغطي ذلك.
 
