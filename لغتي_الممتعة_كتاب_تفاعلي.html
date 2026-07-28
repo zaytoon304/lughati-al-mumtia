@@ -745,6 +745,7 @@ const app=document.getElementById("app");
 function go(name,arg){
   window.scrollTo(0,0);
   if(window.speechSynthesis)speechSynthesis.cancel();
+  if(name!=="gRunner")stopRunner();
   app.classList.remove("fade-in"); void app.offsetWidth; app.classList.add("fade-in");
   switch(name){
     case "home":renderHome();break;
@@ -824,6 +825,7 @@ function go(name,arg){
     case "gMemoryPlay":startMemory(arg);break;
     case "gXO":startXO();break;
     case "gPenalty":startPenalty();break;
+    case "gRunner":startRunner();break;
     case "final":startFinal();break;
     case "cert":renderCert();break;
     case "guide":renderGuide();break;
@@ -918,12 +920,13 @@ const UNITS=[
  {id:"gMemory",icon:"🃏",title:"لعبة الذاكرة",desc:"٧ مراحل متدرجة الصعوبة",key:null},
  {id:"gXO",icon:"❌",title:"إكس أو",desc:"العب ضد الكمبيوتر — ٣ جولات",key:"gXO"},
  {id:"gPenalty",icon:"⚽",title:"ضربات الجزاء",desc:"سجّل أكبر عدد من الأهداف",key:"gPenalty"},
+ {id:"gRunner",icon:"🌟",title:"مغامرة القفز",desc:"اقفز فوق الصخور واجمع النجوم — لعبة أصلية",key:"gRunner"},
  {id:"final",icon:"🏆",title:"الاختبار الختامي",desc:"اختبر ما تعلمته ونل الشهادة",key:"final"},
  {id:"cert",icon:"🎖️",title:"شهادة التفوق",desc:"شهادتك بعد اجتياز الاختبار",key:null},
  {id:"report",icon:"📋",title:"تقرير المعلم",desc:"ملخص أداء الطالب للطباعة",key:null},
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
-const MAX_STARS=50*3;
+const MAX_STARS=51*3;
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -1840,6 +1843,7 @@ function xoFinish(){
 }
 /* ====================== ضربات الجزاء ====================== */
 let PEN=null;
+const PEN_ZONES={left:14,mid:50,right:86};
 function startPenalty(){
   PEN={kick:0,total:5,goals:0,locked:false};
   renderPenalty();
@@ -1847,7 +1851,11 @@ function startPenalty(){
 function renderPenalty(){
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>⚽ ضربات الجزاء</h2></div>'+
   '<p class="center" style="color:#5c548c">ركلة '+toArNum(PEN.kick+1)+' من '+toArNum(PEN.total)+' — أهدافك: '+toArNum(PEN.goals)+'</p>'+
-  '<div class="center" style="font-size:4rem">🥅</div>'+
+  '<div id="pen-field" style="position:relative;width:100%;max-width:320px;height:180px;margin:10px auto;background:linear-gradient(180deg,#bfe3ff 0%,#bfe3ff 45%,#8bc34a 45%,#8bc34a 100%);border-radius:16px;overflow:hidden;border:3px solid #e0d7ff">'+
+    '<div style="position:absolute;top:14px;left:8%;right:8%;height:66px;border:6px solid #fff;border-bottom:none;border-radius:4px 4px 0 0"></div>'+
+    '<div id="pen-keeper" style="position:absolute;top:26px;left:50%;font-size:2.1rem;transform:translateX(-50%);transition:left .5s ease">🧤</div>'+
+    '<div id="pen-ball" style="position:absolute;bottom:14px;left:50%;font-size:1.8rem;transform:translateX(-50%);transition:left .55s ease, bottom .55s ease">⚽</div>'+
+  '</div>'+
   '<p class="center" style="font-weight:800">اختر جهة الركلة</p>'+
   '<div class="center" style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">'+
   '<button class="btn blue" onclick="penKick(\'left\')">⬅️ يسار</button>'+
@@ -1862,14 +1870,21 @@ function penKick(dir){
   const dirs=["left","mid","right"];
   const keeper=dirs[Math.floor(Math.random()*3)];
   const scored=keeper!==dir;
-  if(scored){PEN.goals++;soundCorrect();}else{soundWrong();}
-  const ex=document.getElementById("q-explain");
-  if(ex)ex.textContent=scored?"⚽ هـــدف!":"🧤 تصدى لها الحارس!";
+  const ball=document.getElementById("pen-ball");
+  const keeperEl=document.getElementById("pen-keeper");
+  if(ball){ ball.style.left=PEN_ZONES[dir]+"%"; ball.style.bottom="120px"; }
+  if(keeperEl){ keeperEl.style.left=PEN_ZONES[keeper]+"%"; }
+  setTimeout(()=>{
+    if(scored){PEN.goals++;soundCorrect();}else{soundWrong();}
+    const ex=document.getElementById("q-explain");
+    if(ex)ex.textContent=scored?"⚽ هـــدف!":"🧤 تصدى لها الحارس!";
+    if(ball) ball.textContent=scored?"🥳":"😅";
+  },560);
   setTimeout(()=>{
     PEN.kick++;
     PEN.locked=false;
     if(PEN.kick>=PEN.total)penFinish(); else renderPenalty();
-  },1200);
+  },1700);
 }
 function penFinish(){
   const st=PEN.goals>=4?3:PEN.goals>=2?2:1;
@@ -1880,6 +1895,109 @@ function penFinish(){
   '<div class="r-stars">'+"⭐".repeat(st)+"☆".repeat(3-st)+'</div>'+
   '<div class="r-msg">سجّلت '+toArNum(PEN.goals)+' من '+toArNum(PEN.total)+' أهداف!</div>'+
   '<div class="detail-nav mt"><button class="btn green" onclick="go(\'gPenalty\')">🔄 إعادة اللعب</button>'+
+  '<button class="btn ghost" onclick="go(\'home\')">🏠 الرئيسية</button></div></div>';
+}
+/* ====================== مغامرة القفز (لعبة جري وقفز أصلية) ====================== */
+let RUN=null;
+function stopRunner(){
+  if(RUN&&RUN.timer){clearInterval(RUN.timer);RUN.timer=null;}
+  document.removeEventListener("keydown",runnerKeyHandler);
+}
+function startRunner(){
+  stopRunner();
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🌟 مغامرة القفز</h2></div>'+
+  '<p class="center" style="color:#5c548c">اضغط "اقفز" أو دوس على أرض اللعبة عشان تتخطى الصخور وتجمع النجوم</p>'+
+  '<div id="runner-world" style="position:relative;width:100%;max-width:340px;height:170px;margin:10px auto;background:linear-gradient(180deg,#bfe3ff 0%,#fff8e1 78%);border:3px solid #e0d7ff;border-radius:16px;overflow:hidden;touch-action:manipulation;cursor:pointer">'+
+    '<div style="position:absolute;bottom:0;left:0;right:0;height:14px;background:#8bc34a"></div>'+
+    '<div id="run-char" style="position:absolute;bottom:14px;left:26px;font-size:2rem">🐰</div>'+
+  '</div>'+
+  '<div class="center" style="font-weight:800;font-size:1.1rem">❤️ <span id="run-lives">٣</span> &nbsp;&nbsp; ⭐ <span id="run-score">٠</span></div>'+
+  '<div class="center mt"><button class="btn orange" id="run-jump-btn" onclick="runnerJump()">⬆️ اقفز</button></div>';
+  RUN={
+    running:true,jumping:false,jumpV:0,charBottom:0,
+    obstacles:[],stars:[],tick:0,score:0,lives:3,invuln:0,
+    speed:3.2,spawnTimer:60,starTimer:40,
+    world:document.getElementById("runner-world"),
+    charEl:document.getElementById("run-char")
+  };
+  if(RUN.world) RUN.world.addEventListener("pointerdown",runnerJump);
+  document.addEventListener("keydown",runnerKeyHandler);
+  RUN.timer=setInterval(runnerTick,33);
+}
+function runnerKeyHandler(e){ if(e.code==="Space"){e.preventDefault();runnerJump();} }
+function runnerJump(){
+  if(!RUN||!RUN.running||RUN.jumping)return;
+  RUN.jumping=true; RUN.jumpV=8.5;
+}
+function runnerTick(){
+  if(!RUN||!RUN.running)return;
+  RUN.tick++;
+  if(RUN.jumping){
+    RUN.charBottom+=RUN.jumpV;
+    RUN.jumpV-=0.85;
+    if(RUN.charBottom<=0){RUN.charBottom=0;RUN.jumping=false;RUN.jumpV=0;}
+  }
+  if(RUN.charEl) RUN.charEl.style.bottom=(14+RUN.charBottom)+"px";
+  if(RUN.invuln>0)RUN.invuln--;
+  const charX=26;
+  RUN.spawnTimer--;
+  if(RUN.spawnTimer<=0&&RUN.world){
+    RUN.spawnTimer=55+Math.floor(Math.random()*35);
+    const el=document.createElement("div");
+    el.style.cssText="position:absolute;bottom:14px;font-size:1.7rem;left:320px";
+    el.textContent="🌵";
+    RUN.world.appendChild(el);
+    RUN.obstacles.push({el:el,x:320});
+  }
+  RUN.starTimer--;
+  if(RUN.starTimer<=0&&RUN.world){
+    RUN.starTimer=75+Math.floor(Math.random()*45);
+    const el=document.createElement("div");
+    el.style.cssText="position:absolute;bottom:58px;font-size:1.5rem;left:320px";
+    el.textContent="⭐";
+    RUN.world.appendChild(el);
+    RUN.stars.push({el:el,x:320});
+  }
+  RUN.obstacles=RUN.obstacles.filter(o=>{
+    o.x-=RUN.speed; o.el.style.left=o.x+"px";
+    if(o.x<-30){o.el.remove();return false;}
+    if(Math.abs(o.x-charX)<20 && RUN.charBottom<26 && RUN.invuln<=0){
+      RUN.lives--; RUN.invuln=45; soundWrong();
+      const lv=document.getElementById("run-lives"); if(lv)lv.textContent=toArNum(RUN.lives);
+      o.el.remove();
+      if(RUN.lives<=0) runnerEnd();
+      return false;
+    }
+    return true;
+  });
+  RUN.stars=RUN.stars.filter(s=>{
+    s.x-=RUN.speed; s.el.style.left=s.x+"px";
+    if(s.x<-30){s.el.remove();return false;}
+    if(Math.abs(s.x-charX)<20 && RUN.charBottom>=22 && RUN.charBottom<=68){
+      s.el.remove(); RUN.score+=5; soundCorrect();
+      const sc=document.getElementById("run-score"); if(sc)sc.textContent=toArNum(RUN.score);
+      return false;
+    }
+    return true;
+  });
+  if(RUN.tick%10===0){
+    RUN.score+=1;
+    const sc=document.getElementById("run-score"); if(sc)sc.textContent=toArNum(RUN.score);
+  }
+  if(RUN.tick>0&&RUN.tick%450===0) RUN.speed=Math.min(RUN.speed+0.6,7.5);
+  if(RUN.tick>=1350) runnerEnd();
+}
+function runnerEnd(){
+  RUN.running=false;
+  stopRunner();
+  const st=RUN.score>=120?3:RUN.score>=60?2:1;
+  setStars("gRunner",st);
+  soundWin();confetti();praise();
+  app.innerHTML='<div class="result-box">'+
+  '<div style="font-size:3rem">🌟</div>'+
+  '<div class="r-stars">'+"⭐".repeat(st)+"☆".repeat(3-st)+'</div>'+
+  '<div class="r-msg">جمعت '+toArNum(RUN.score)+' نقطة!</div>'+
+  '<div class="detail-nav mt"><button class="btn green" onclick="go(\'gRunner\')">🔄 إعادة اللعب</button>'+
   '<button class="btn ghost" onclick="go(\'home\')">🏠 الرئيسية</button></div></div>';
 }
 /* ====================== لعبة الذاكرة ====================== */
@@ -2149,7 +2267,7 @@ const REPORT_ROWS=[
  ["الذاكرة - المرحلة ١","gMemoryL0"],["الذاكرة - المرحلة ٢","gMemoryL1"],["الذاكرة - المرحلة ٣","gMemoryL2"],
  ["الذاكرة - المرحلة ٤","gMemoryL3"],["الذاكرة - المرحلة ٥","gMemoryL4"],["الذاكرة - المرحلة ٦","gMemoryL5"],
  ["الذاكرة - المرحلة ٧","gMemoryL6"],
- ["إكس أو","gXO"],["ضربات الجزاء","gPenalty"],
+ ["إكس أو","gXO"],["ضربات الجزاء","gPenalty"],["مغامرة القفز","gRunner"],
  ["الاختبار الختامي","final"]
 ];
 function renderReport(){
