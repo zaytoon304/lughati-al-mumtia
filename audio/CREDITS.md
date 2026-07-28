@@ -21,6 +21,11 @@
 | sound_14.mp3 | بومة | [Maghreb_owl_hooting.wav](https://commons.wikimedia.org/wiki/File:Maghreb_owl_hooting.wav) | CC BY-SA 4.0 |
 | sound_15.mp3 | حمار | [donkey braying, south of France](https://commons.wikimedia.org/wiki/File:157763_felix-blume_a-donkey-is-braying-in-his-enclosure-in-south-of-france.wav) | CC0 (ملكية عامة) |
 | sound_16.mp3 | دب | [Bear_growl.ogg](https://commons.wikimedia.org/wiki/File:Bear_growl.ogg) | CC BY 3.0 |
+| sound_17.mp3 | نمر | [439280_schots_angry-tiger.wav](https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav) | CC0 (ملكية عامة) |
+| sound_18.mp3 | غراب | [Corvus_corone_-_Carrion_Crow_XC511943.mp3](https://commons.wikimedia.org/wiki/File:Corvus_corone_-_Carrion_Crow_XC511943.mp3) | CC BY-SA 4.0 |
+| sound_19.mp3 | ثعلب | [Vulpes_vulpes,_Slovakia_XC108315.mp3](https://commons.wikimedia.org/wiki/File:Vulpes_vulpes,_at_Henclov%C3%A1,_Slovakia_XC108315.mp3) | CC BY-SA 4.0 |
+| sound_20.mp3 | بطريق | [Little_Penguin_calls_at_St_Kilda_Breakwater.ogg](https://commons.wikimedia.org/wiki/File:20091121_Little_Penguin_calls_at_St_Kilda_Breakwater.ogg) | CC BY 3.0 |
+| sound_21.mp3 | خنزير | [Mudchute_pig_1.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_pig_1.ogg) | CC BY-SA 3.0 |
 
 بعض الرخص (CC BY / CC BY-SA) تشترط ذكر المصدر عند إعادة النشر — هذا الملف يُغطي ذلك.
 
