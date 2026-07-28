@@ -613,10 +613,16 @@ function soundCorrect(){tone(523,.18);tone(659,.22,.15);}
 function soundWrong(){tone(196,.3);}
 function soundWin(){tone(523,.15);tone(659,.15,.13);tone(784,.15,.26);tone(1047,.35,.39);}
 let arVoice=null, enVoice=null;
+const MALE_VOICE_HINTS=["majed","maged","tarik","hamed","mehdi","mansour","yousef","khalid","hamid"];
 function loadVoices(){
   const vs=window.speechSynthesis? speechSynthesis.getVoices():[];
   const arVoices=vs.filter(v=>v.lang&&v.lang.toLowerCase().startsWith("ar"));
-  arVoice=(P.voiceName&&arVoices.find(v=>v.name===P.voiceName))||arVoices[0]||null;
+  let picked=P.voiceName? arVoices.find(v=>v.name===P.voiceName):null;
+  if(!picked){
+    const nonMale=arVoices.filter(v=>!MALE_VOICE_HINTS.some(h=>v.name.toLowerCase().includes(h)));
+    picked=nonMale[0]||arVoices[0]||null;
+  }
+  arVoice=picked;
   enVoice=vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith("en"))||null;
   populateVoiceSelect();
 }
