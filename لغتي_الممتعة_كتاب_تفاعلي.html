@@ -374,7 +374,8 @@ const FRUITS=[
  {name:"تفاحة",emoji:"🍎"},{name:"موزة",emoji:"🍌"},{name:"عنب",emoji:"🍇"},
  {name:"بطيخة",emoji:"🍉"},{name:"فراولة",emoji:"🍓"},{name:"برتقالة",emoji:"🍊"},
  {name:"أناناس",emoji:"🍍"},{name:"كرز",emoji:"🍒"},{name:"ليمون",emoji:"🍋"},{name:"خوخ",emoji:"🍑"},
- {name:"مانجو",emoji:"🥭"},{name:"جوز هند",emoji:"🥥"},{name:"كيوي",emoji:"🥝"}
+ {name:"مانجو",emoji:"🥭"},{name:"جوز هند",emoji:"🥥"},{name:"كيوي",emoji:"🥝"},
+ {name:"كمثرى",emoji:"🍐"},{name:"تفاح أخضر",emoji:"🍏"},{name:"توت أزرق",emoji:"🫐"},{name:"شمام",emoji:"🍈"}
 ];
 const TRANSPORT=[
  {name:"سيارة",emoji:"🚗"},{name:"طائرة",emoji:"✈️"},{name:"قطار",emoji:"🚂"},
@@ -389,7 +390,10 @@ const NUMBERS_V=[
 ];
 const BODY=[
  {name:"عين",emoji:"👁️"},{name:"أذن",emoji:"👂"},{name:"أنف",emoji:"👃"},
- {name:"فم",emoji:"👄"},{name:"يد",emoji:"✋"},{name:"قدم",emoji:"🦶"},{name:"أسنان",emoji:"🦷"}
+ {name:"فم",emoji:"👄"},{name:"يد",emoji:"✋"},{name:"قدم",emoji:"🦶"},{name:"أسنان",emoji:"🦷"},
+ {name:"شعر",emoji:"🦱"},{name:"لحية",emoji:"🧔"},{name:"ذراع",emoji:"💪"},
+ {name:"كف",emoji:"🖐️"},{name:"فخذ",emoji:"🦵"},{name:"ركبة",emoji:"🦵"},
+ {name:"حاجب",emoji:"🤨"},{name:"إصبع",emoji:"☝️"},{name:"ظفر",emoji:"💅"},{name:"لسان",emoji:"👅"}
 ];
 const WEATHER=[
  {name:"شمس",emoji:"☀️"},{name:"مطر",emoji:"🌧️"},{name:"غيم",emoji:"☁️"},
@@ -468,6 +472,18 @@ const CAUSE_EFFECT=[
  {cause:"شعر الطفل طويل ومنكوش",causeEmoji:"💇",effect:"✂️",why:"يحتاج قصة شعر"},
  {cause:"الحذاء وسخ من اللعب بالخارج",causeEmoji:"👟",effect:"🧽",why:"يحتاج تنظيف"},
  {cause:"الوقت أصبح متأخراً بالليل",causeEmoji:"🌙",effect:"🛌",why:"وقت النوم"}
+];
+const ANIMAL_MISSING=[
+ {animal:"الفيل",emoji:"🐘",part:"خرطوم"},
+ {animal:"البقرة",emoji:"🐄",part:"ذيل"},
+ {animal:"الأرنب",emoji:"🐰",part:"أذنان طويلتان"},
+ {animal:"الزرافة",emoji:"🦒",part:"رقبة طويلة"},
+ {animal:"الجمل",emoji:"🐫",part:"سنام"},
+ {animal:"القطة",emoji:"🐱",part:"شوارب"},
+ {animal:"الغزال",emoji:"🦌",part:"قرون"},
+ {animal:"الطائر",emoji:"🦅",part:"جناحان"},
+ {animal:"السمكة",emoji:"🐠",part:"زعانف"},
+ {animal:"الفهد",emoji:"🐆",part:"بقع (نقط)"}
 ];
 const EMOTIONS=[
  {name:"سعيد",emoji:"😊",scenario:"صديقك أعطاك هدية جميلة"},
@@ -1169,9 +1185,13 @@ function matchFinish(){
 /* ====================== الشيء الناقص ====================== */
 function renderMissing(){
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🧩 الشيء الناقص</h2></div>'+
-  '<p class="center" style="color:#5c548c">تشوف ٣ أشياء من نفس المجموعة، واختر الصورة الرابعة اللي تكمّلها من نفس المجموعة</p>'+
-  '<div class="haraka-cards"><div class="haraka-card"><div style="font-size:2rem">🍎 🍌 🍇 ❓</div>'+
-  '<div style="color:#7a72a8">الإجابة الصح هنا: فاكهة ثانية زي 🍊</div></div></div>'+
+  '<p class="center" style="color:#5c548c">نوعان من الأسئلة: إكمال مجموعة أشياء، أو تخيّل حيوان ناقصه جزء مهم من جسمه</p>'+
+  '<div class="haraka-cards">'+
+  '<div class="haraka-card"><div style="font-size:2rem">🍎 🍌 🍇 ❓</div>'+
+  '<div style="color:#7a72a8">الإجابة: فاكهة ثانية زي 🍊</div></div>'+
+  '<div class="haraka-card"><div style="font-size:2.4rem">🐘</div>'+
+  '<div style="color:#7a72a8">لو الفيل بدون خرطوم... إيش الجزء الناقص؟</div></div>'+
+  '</div>'+
   '<div class="center mt"><button class="btn green" onclick="go(\'gMissingQuiz\')">🎮 ابدأ التدريب</button></div>';
 }
 /* ====================== التعرف على المشاعر ====================== */
@@ -1458,9 +1478,17 @@ function qMissingOne(){
   const opts=shuffle([correct,...distractors]).map(x=>({label:x.emoji,correct:x.emoji===correct.emoji}));
   return {prompt:"أي صورة تكمّل هذه المجموعة؟",big:shown.map(x=>x.emoji).join(" &nbsp; ")+" &nbsp; ❓",options:opts};
 }
+function qMissingPartOne(){
+  const x=ANIMAL_MISSING[Math.floor(Math.random()*ANIMAL_MISSING.length)];
+  const distractors=shuffle(ANIMAL_MISSING.filter(o=>o!==x).map(o=>o.part)).slice(0,3);
+  const opts=shuffle([x.part,...distractors]).map(p=>({label:p,correct:p===x.part}));
+  return {prompt:"تخيّل "+x.animal+" بدون هذا الجزء المهم من جسمه — إيش الشيء الناقص؟",big:x.emoji,options:opts};
+}
 function startMissingQuiz(){
-  const qs=[];for(let i=0;i<20;i++)qs.push(qMissingOne());
-  startEngine("gMissing","🧩 الشيء الناقص",qs,"gMissingQuiz");
+  const qs=[];
+  for(let i=0;i<10;i++)qs.push(qMissingOne());
+  for(let i=0;i<10;i++)qs.push(qMissingPartOne());
+  startEngine("gMissing","🧩 الشيء الناقص",shuffle(qs),"gMissingQuiz");
 }
 function qEnglishListenOne(x){
   const opts=pickOthers(ENGLISH_LETTERS,x,3,o=>o.emoji).map(o=>({label:o.emoji,correct:o.emoji===x.emoji}));
