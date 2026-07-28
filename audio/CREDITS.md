@@ -16,5 +16,12 @@
 | sound_9.mp3 | ذئب | [Wolf_howls.ogg](https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg) | Public Domain |
 | sound_10.mp3 | ضفدع | [Single_Frog_Croak.oga](https://commons.wikimedia.org/wiki/File:Single_Frog_Croak.oga) | CC BY-SA 4.0 |
 | sound_11.mp3 | نحلة | [Bee_buzzing_sound_(animal_noises).opus](https://commons.wikimedia.org/wiki/File:Bee_buzzing_sound_(animal_noises).opus) | CC BY 3.0 — نُسب الأصل لـ"Free Sounds Library" |
+| sound_12.mp3 | فيل | [Elephant_voice_-_trumpeting.ogg](https://commons.wikimedia.org/wiki/File:Elephant_voice_-_trumpeting.ogg) | CC0 (ملكية عامة) |
+| sound_13.mp3 | قرد | [Brown_woolly_monkey_alarm_call.wav](https://commons.wikimedia.org/wiki/File:Brown_woolly_monkey_alarm_call.wav) | CC BY-SA 4.0 |
+| sound_14.mp3 | بومة | [Maghreb_owl_hooting.wav](https://commons.wikimedia.org/wiki/File:Maghreb_owl_hooting.wav) | CC BY-SA 4.0 |
+| sound_15.mp3 | حمار | [donkey braying, south of France](https://commons.wikimedia.org/wiki/File:157763_felix-blume_a-donkey-is-braying-in-his-enclosure-in-south-of-france.wav) | CC0 (ملكية عامة) |
+| sound_16.mp3 | دب | [Bear_growl.ogg](https://commons.wikimedia.org/wiki/File:Bear_growl.ogg) | CC BY 3.0 |
 
 بعض الرخص (CC BY / CC BY-SA) تشترط ذكر المصدر عند إعادة النشر — هذا الملف يُغطي ذلك.
+
+**ملاحظة تقنية:** كل الملفات مرّت بمعالجة توحيد الصوت (loudness normalization) عشان تكون واضحة ومسموعة بنفس المستوى تقريباً — صوت الأسد الأصلي كان هادئ جداً بالثواني الأولى، فاخترنا مقطعاً أعلى صوتاً من نفس التسجيل بعد فحصه.
