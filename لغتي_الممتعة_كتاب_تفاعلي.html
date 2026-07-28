@@ -333,7 +333,11 @@ const PATTERNS=[
  {seq:["🐘","🐘","🐒","🐘","🐘","🐒","🐘"],answer:"🐘",options:["🐘","🐒","🦁"]},
  {seq:["🍇","🍇","🍇","🍌","🍇","🍇","🍇"],answer:"🍌",options:["🍌","🍇","🍎"]},
  {seq:["1️⃣","2️⃣","3️⃣","1️⃣","2️⃣","3️⃣"],answer:"1️⃣",options:["1️⃣","2️⃣","3️⃣"]},
- {seq:["🔵","🔵","🔴","🔵","🔵","🔴"],answer:"🔵",options:["🔵","🔴","🟢"]}
+ {seq:["🔵","🔵","🔴","🔵","🔵","🔴"],answer:"🔵",options:["🔵","🔴","🟢"]},
+ {seq:["🍎","🍎","🍌","🍎","🍎","🍌"],answer:"🍎",options:["🍎","🍌","🍊"]},
+ {seq:["⭐","⭐","🌙","⭐","⭐","🌙"],answer:"⭐",options:["⭐","🌙","☀️"]},
+ {seq:["🐸","🐸","🐸","🐦","🐸","🐸","🐸"],answer:"🐦",options:["🐦","🐸","🐟"]},
+ {seq:["🟩","🟦","🟩","🟦","🟩"],answer:"🟦",options:["🟦","🟩","🟨"]}
 ];
 const COUNT_EMOJIS=["🍎","⭐","🎈","🐣","🌸","⚽","🍪","🦋","🚗","🐠"];
 const NUM_WORDS=["","واحد","اثنان","ثلاثة","أربعة","خمسة","ستة","سبعة","ثمانية","تسعة","عشرة"];
@@ -472,6 +476,62 @@ const RHYTHMS=[
  {seq:["👏","⬜","⬜","👏","⬜","⬜"],answer:"👏",options:["👏","⬜","🔔"]},
  {seq:["🔔","🔔","👏","🔔","🔔"],answer:"👏",options:["👏","🔔","⬜"]},
  {seq:["👏","🥁","👏","🥁","👏"],answer:"🥁",options:["🥁","👏","🔔"]}
+];
+const OPPOSITES=[
+ {a:"فوق",aEmoji:"⬆️",b:"تحت",bEmoji:"⬇️"},
+ {a:"كبير",aEmoji:"🐘",b:"صغير",bEmoji:"🐭"},
+ {a:"طويل",aEmoji:"🦒",b:"قصير",bEmoji:"🐢"},
+ {a:"حار",aEmoji:"🔥",b:"بارد",bEmoji:"❄️"},
+ {a:"سريع",aEmoji:"🐇",b:"بطيء",bEmoji:"🐌"},
+ {a:"مفتوح",aEmoji:"🚪",b:"مغلق",bEmoji:"🔒"},
+ {a:"ليل",aEmoji:"🌙",b:"نهار",bEmoji:"☀️"},
+ {a:"فرحان",aEmoji:"😄",b:"حزين",bEmoji:"😢"},
+ {a:"ثقيل",aEmoji:"🪨",b:"خفيف",bEmoji:"🪶"},
+ {a:"نظيف",aEmoji:"🧼",b:"متسخ",bEmoji:"🟤"},
+ {a:"جديد",aEmoji:"✨",b:"قديم",bEmoji:"📜"},
+ {a:"فارغ",aEmoji:"⬜",b:"ممتلئ",bEmoji:"🟩"},
+ {a:"عالي",aEmoji:"🏔️",b:"واطي",bEmoji:"🥞"},
+ {a:"قوي",aEmoji:"💪",b:"ضعيف",bEmoji:"🍃"}
+];
+const SENSES=[
+ {name:"أرى بعيني",emoji:"👁️"},
+ {name:"أسمع بأذني",emoji:"👂"},
+ {name:"أشم بأنفي",emoji:"👃"},
+ {name:"أتذوق بلساني",emoji:"👅"},
+ {name:"ألمس بيدي",emoji:"✋"}
+];
+const SENSE_ITEMS=[
+ {emoji:"🌹",sense:"أشم بأنفي"},{emoji:"🍯",sense:"أتذوق بلساني"},{emoji:"🎵",sense:"أسمع بأذني"},
+ {emoji:"🌈",sense:"أرى بعيني"},{emoji:"🧊",sense:"ألمس بيدي"},{emoji:"🔔",sense:"أسمع بأذني"},
+ {emoji:"🍋",sense:"أتذوق بلساني"},{emoji:"🧸",sense:"ألمس بيدي"},{emoji:"🌸",sense:"أشم بأنفي"},
+ {emoji:"⭐",sense:"أرى بعيني"},{emoji:"🍦",sense:"أتذوق بلساني"},{emoji:"🥁",sense:"أسمع بأذني"},
+ {emoji:"🧣",sense:"ألمس بيدي"},{emoji:"🍞",sense:"أشم بأنفي"},{emoji:"🌙",sense:"أرى بعيني"}
+];
+const ANIMAL_SOUNDS=[
+ {name:"قطة",emoji:"🐱",sound:"مياو مياو"},
+ {name:"كلب",emoji:"🐶",sound:"هاو هاو"},
+ {name:"بقرة",emoji:"🐄",sound:"موووو"},
+ {name:"خروف",emoji:"🐑",sound:"بعععع"},
+ {name:"أسد",emoji:"🦁",sound:"زئير هووووم"},
+ {name:"ديك",emoji:"🐓",sound:"كوكوكو كوك"},
+ {name:"دجاجة",emoji:"🐔",sound:"قوقوقو"},
+ {name:"بطة",emoji:"🦆",sound:"باق باق"},
+ {name:"حصان",emoji:"🐴",sound:"هيهيهيه"},
+ {name:"ذئب",emoji:"🐺",sound:"عوووو"},
+ {name:"ضفدع",emoji:"🐸",sound:"نقنق نقنق"},
+ {name:"نحلة",emoji:"🐝",sound:"زززز"}
+];
+const BABY_ANIMALS=[
+ {name:"جرو",parent:"كلب",emoji:"🐶"},
+ {name:"هريرة",parent:"قطة",emoji:"🐱"},
+ {name:"كتكوت",parent:"دجاجة",emoji:"🐣"},
+ {name:"بطبوط",parent:"بطة",emoji:"🐥"},
+ {name:"حَمَل",parent:"خروف",emoji:"🐑"},
+ {name:"جدي",parent:"ماعز",emoji:"🐐"},
+ {name:"مُهر",parent:"حصان",emoji:"🐴"},
+ {name:"عجل",parent:"بقرة",emoji:"🐄"},
+ {name:"شبل",parent:"أسد",emoji:"🦁"},
+ {name:"أرنوب",parent:"أرنب",emoji:"🐰"}
 ];
 /* ====================== أدوات مساعدة ====================== */
 function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
@@ -693,6 +753,14 @@ function go(name,arg){
     case "gEmotionsQuiz":startEmotionsQuiz();break;
     case "gRhythm":renderRhythm();break;
     case "gRhythmQuiz":startRhythm();break;
+    case "gOpposites":renderOpposites();break;
+    case "gOppositesQuiz":startOppositesQuiz();break;
+    case "gSenses":renderSenses();break;
+    case "gSensesQuiz":startSensesQuiz();break;
+    case "gAnimalSounds":renderAnimalSounds();break;
+    case "gAnimalSoundsQuiz":startAnimalSoundsQuiz();break;
+    case "gBabyAnimals":renderBabyAnimals();break;
+    case "gBabyAnimalsQuiz":startBabyAnimalsQuiz();break;
     case "gTrace":startTrace();break;
     case "report":renderReport();break;
     case "gLetterSound":startLetterSound();break;
@@ -790,13 +858,17 @@ const UNITS=[
  {id:"gEnAnimals",icon:"🦁",title:"English: Animals",desc:"أسماء الحيوانات بالإنجليزي",key:"gEnAnimals"},
  {id:"gEmotions",icon:"💛",title:"التعرف على المشاعر",desc:"مهارة اجتماعية وعاطفية: اعرف شعورك وشعور غيرك",key:"gEmotions"},
  {id:"gRhythm",icon:"🎵",title:"أكمل الإيقاع",desc:"مهارة موسيقية: تعرّف على نمط الإيقاع",key:"gRhythm"},
+ {id:"gOpposites",icon:"↔️",title:"الأضداد",desc:"فوق/تحت، كبير/صغير، طويل/قصير وأكثر",key:"gOpposites"},
+ {id:"gSenses",icon:"🖐️",title:"الحواس الخمس",desc:"أرى، أسمع، أشم، أتذوق، ألمس",key:"gSenses"},
+ {id:"gAnimalSounds",icon:"🔊",title:"أصوات الحيوانات",desc:"استمع لصوت الحيوان وحدد صاحبه",key:"gAnimalSounds"},
+ {id:"gBabyAnimals",icon:"🐣",title:"صغار الحيوانات",desc:"ما اسم صغير كل حيوان؟",key:"gBabyAnimals"},
  {id:"gMemory",icon:"🃏",title:"لعبة الذاكرة",desc:"قوِّ ذاكرتك بمطابقة البطاقات",key:"gMemory"},
  {id:"final",icon:"🏆",title:"الاختبار الختامي",desc:"اختبر ما تعلمته ونل الشهادة",key:"final"},
  {id:"cert",icon:"🎖️",title:"شهادة التفوق",desc:"شهادتك بعد اجتياز الاختبار",key:null},
  {id:"report",icon:"📋",title:"تقرير المعلم",desc:"ملخص أداء الطالب للطباعة",key:null},
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
-const MAX_STARS=38*3;
+const MAX_STARS=42*3;
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -1089,6 +1161,60 @@ function renderRhythm(){
   '<div style="color:#7a72a8">الإجابة: ⬜ (الصمت يتكرر بعد كل تصفيقة)</div></div></div>'+
   '<div class="center mt"><button class="btn green" onclick="go(\'gRhythmQuiz\')">🎮 ابدأ التدريب</button></div>';
 }
+/* ====================== الأضداد ====================== */
+function renderOpposites(){
+  let cards="";
+  OPPOSITES.forEach(p=>{
+    cards+='<div class="haraka-card"><div style="font-size:2.2rem">'+p.aEmoji+' &nbsp; ↔ &nbsp; '+p.bEmoji+'</div>'+
+    '<div class="h-name">'+p.a+' ↔ '+p.b+'</div>'+
+    '<button class="btn small orange" onclick="speak(\''+p.a+'\')">🔊 '+p.a+'</button> '+
+    '<button class="btn small pink" onclick="speak(\''+p.b+'\')">🔊 '+p.b+'</button></div>';
+  });
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>↔️ الأضداد</h2></div>'+
+  '<p class="center" style="color:#5c548c">كل كلمة لها ضد — تعرّف على الأزواج ثم جرب اللعبة</p>'+
+  '<div class="haraka-cards">'+cards+'</div>'+
+  '<div class="center mt"><button class="btn green" onclick="go(\'gOppositesQuiz\')">🎮 ابدأ التدريب</button></div>';
+}
+/* ====================== الحواس الخمس ====================== */
+function renderSenses(){
+  let cards="";
+  SENSES.forEach(s=>{
+    cards+='<div class="haraka-card"><div style="font-size:3rem">'+s.emoji+'</div>'+
+    '<div class="h-name">'+s.name+'</div>'+
+    '<button class="btn small orange" onclick="speak(\''+s.name+'\')">🔊 استمع</button></div>';
+  });
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🖐️ الحواس الخمس</h2></div>'+
+  '<p class="center" style="color:#5c548c">بها نتعرّف على العالم من حولنا</p>'+
+  '<div class="haraka-cards">'+cards+'</div>'+
+  '<div class="center mt"><button class="btn green" onclick="go(\'gSensesQuiz\')">🎮 ابدأ التدريب</button></div>';
+}
+/* ====================== أصوات الحيوانات ====================== */
+function renderAnimalSounds(){
+  let cards="";
+  ANIMAL_SOUNDS.forEach((a,i)=>{
+    cards+='<div class="haraka-card"><div style="font-size:3rem">'+a.emoji+'</div>'+
+    '<div class="h-name">'+a.name+'</div>'+
+    '<button class="btn small orange" onclick="playOrSpeak(\'sound_'+i+'\',\''+a.sound+'\')">🔊 اسمع الصوت</button></div>';
+  });
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🔊 أصوات الحيوانات</h2></div>'+
+  '<p class="center" style="color:#5c548c">استمع لصوت الحيوان (تقليد صوتي) وتعرّف عليه — يمكن لاحقاً استبداله بتسجيل حقيقي بنفس طريقة أصوات الحروف</p>'+
+  '<div class="haraka-cards">'+cards+'</div>'+
+  '<div class="center mt"><button class="btn green" onclick="go(\'gAnimalSoundsQuiz\')">🎮 ابدأ التدريب</button></div>';
+}
+/* ====================== صغار الحيوانات ====================== */
+function renderBabyAnimals(){
+  let cards="";
+  BABY_ANIMALS.forEach(b=>{
+    cards+='<div class="haraka-card"><div style="font-size:3rem">'+b.emoji+'</div>'+
+    '<div class="h-name">'+b.name+'</div>'+
+    '<div style="font-size:.95rem;color:#7a72a8">صغير ال'+b.parent+'</div>'+
+    '<button class="btn small orange" onclick="speak(\''+b.name+'\')">🔊 استمع</button></div>';
+  });
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🐣 صغار الحيوانات</h2></div>'+
+  '<p class="center" style="color:#5c548c">لكل حيوان اسم خاص لصغيره</p>'+
+  '<div class="haraka-cards">'+cards+'</div>'+
+  '<div class="center mt"><button class="btn green" onclick="go(\'gBabyAnimalsQuiz\')">🎮 ابدأ التدريب</button></div>';
+}
 /* ====================== محرك الأسئلة العام ====================== */
 let Q=null;
 function startEngine(key,title,qs,restart){
@@ -1103,7 +1229,8 @@ function renderQuestion(){
   });
   const speakFn=q.speakFn||"speak";
   const speakLabel=speakFn==="speakEN"?"Listen":"استمع";
-  const speakBtn=q.speak? '<button class="btn orange" onclick="'+speakFn+'(\''+q.speak+'\')">🔊 '+speakLabel+'</button>':"";
+  const speakCall=q.playKey? "playOrSpeak('"+q.playKey+"','"+q.speak+"')" : speakFn+"('"+q.speak+"')";
+  const speakBtn=q.speak? '<button class="btn orange" onclick="'+speakCall+'">🔊 '+speakLabel+'</button>':"";
   const bigCls=q.bigIsLetter? "q-big letters":"q-big";
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>'+Q.title+'</h2></div>'+
   '<div class="quiz-box">'+
@@ -1113,7 +1240,7 @@ function renderQuestion(){
   '<div class="q-opts mt">'+opts+'</div>'+
   '<div class="q-explain" id="q-explain"></div>'+
   '</div>';
-  if(q.speak)setTimeout(()=>{(speakFn==="speakEN"?speakEN:speak)(q.speak);},400);
+  if(q.speak)setTimeout(()=>{ if(q.playKey) playOrSpeak(q.playKey,q.speak); else (speakFn==="speakEN"?speakEN:speak)(q.speak); },400);
 }
 function answer(i){
   const q=Q.qs[Q.idx];
@@ -1198,7 +1325,7 @@ function qNumberSquareOne(){
   return {prompt:"استمع للعدد، ثم اضغط على المربع اللي فيه نفس عدد الدوائر",options:opts,speak:NUM_WORDS[n]};
 }
 function startNumbersVQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qNumberSquareOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qNumberSquareOne());
   startEngine("gNumbersV","🔟 الأرقام",qs,"gNumbersVQuiz");
 }
 function qBondOne(){
@@ -1216,7 +1343,7 @@ function qBondOne(){
   return {prompt:"كم دائرة ناقصة لتكتمل "+toArNum(whole)+"؟",big:big,options:opts};
 }
 function startBondsQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qBondOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qBondOne());
   startEngine("gBonds","🔢 روابط الأعداد",qs,"gBondsQuiz");
 }
 function qClassifyOne(){
@@ -1231,7 +1358,7 @@ function qClassifyOne(){
   return {prompt:"إلى أي مجموعة ينتمي هذا؟",big:item.emoji,options:opts,speak:item.name};
 }
 function startClassifyQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qClassifyOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qClassifyOne());
   startEngine("gClassify","🗂️ صنّف الأشياء",qs,"gClassifyQuiz");
 }
 function qSequenceOne(){
@@ -1245,7 +1372,7 @@ function qSequenceOne(){
           big:shownOrder.join(" &nbsp; "),options:opts,explain:"الترتيب الصحيح: "+seq.items.join(" ← ")};
 }
 function startSequenceQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qSequenceOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qSequenceOne());
   startEngine("gSequence","📶 رتّب القصة",qs,"gSequenceQuiz");
 }
 function qCauseOne(){
@@ -1255,7 +1382,7 @@ function qCauseOne(){
   return {prompt:c.cause+" — ماذا يحدث بعد ذلك؟",big:c.causeEmoji,options:opts,speak:c.cause,explain:c.why};
 }
 function startCauseQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qCauseOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qCauseOne());
   startEngine("gCause","🔗 السبب والنتيجة",qs,"gCauseQuiz");
 }
 function qDiffOne(){
@@ -1275,7 +1402,7 @@ function qDiffOne(){
   return {prompt:"قارن الصفين: في أي ترتيب الصورة مختلفة؟",big:big,options:opts};
 }
 function startDiffQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qDiffOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qDiffOne());
   startEngine("gDiff","🔍 لاحظ الفرق",qs,"gDiffQuiz");
 }
 function qMissingOne(){
@@ -1298,7 +1425,7 @@ function qMissingOne(){
   return {prompt:"أي صورة تكمّل هذه المجموعة؟",big:shown.map(x=>x.emoji).join(" &nbsp; ")+" &nbsp; ❓",options:opts};
 }
 function startMissingQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qMissingOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qMissingOne());
   startEngine("gMissing","🧩 الشيء الناقص",qs,"gMissingQuiz");
 }
 function qEnglishListenOne(x){
@@ -1331,6 +1458,51 @@ function startRhythm(){
   const base=shuffle(RHYTHMS);
   const qs=base.concat(shuffle(RHYTHMS)).map(qRhythmOne);
   startEngine("gRhythm","🎵 أكمل الإيقاع",qs,"gRhythmQuiz");
+}
+function qOppOne(){
+  const p=OPPOSITES[Math.floor(Math.random()*OPPOSITES.length)];
+  const showA=Math.random()<0.5;
+  const shown=showA? p.a:p.b, shownEmoji=showA? p.aEmoji:p.bEmoji, correct=showA? p.b:p.a;
+  const pool=[];
+  OPPOSITES.forEach(o=>{if(o!==p){pool.push(o.a);pool.push(o.b);}});
+  const distractors=shuffle(pool).slice(0,3);
+  const opts=shuffle([correct,...distractors]).map(w=>({label:w,correct:w===correct}));
+  return {prompt:"ما ضد كلمة ("+shown+")؟",big:shownEmoji,options:opts,speak:shown};
+}
+function startOppositesQuiz(){
+  const qs=[];for(let i=0;i<20;i++)qs.push(qOppOne());
+  startEngine("gOpposites","↔️ الأضداد",qs,"gOppositesQuiz");
+}
+function qSenseOne(){
+  const it=SENSE_ITEMS[Math.floor(Math.random()*SENSE_ITEMS.length)];
+  const opts=shuffle(SENSES.map(s=>({label:s.name,correct:s.name===it.sense})));
+  return {prompt:"بأي حاسة تحس بهذا الشيء؟",big:it.emoji,options:opts};
+}
+function startSensesQuiz(){
+  const qs=[];for(let i=0;i<20;i++)qs.push(qSenseOne());
+  startEngine("gSenses","🖐️ الحواس الخمس",qs,"gSensesQuiz");
+}
+function qAnimalSoundOne(x){
+  const i=ANIMAL_SOUNDS.indexOf(x);
+  const opts=pickOthers(ANIMAL_SOUNDS,x,3,o=>o.emoji).map(o=>({label:o.emoji,correct:o.emoji===x.emoji}));
+  return {prompt:"استمع للصوت: أي حيوان يصدره؟",speak:x.sound,playKey:"sound_"+i,big:"🔊",options:opts};
+}
+function startAnimalSoundsQuiz(){
+  const qs=shuffle(ANIMAL_SOUNDS).concat(shuffle(ANIMAL_SOUNDS)).map(qAnimalSoundOne);
+  startEngine("gAnimalSounds","🔊 أصوات الحيوانات",qs,"gAnimalSoundsQuiz");
+}
+function qBabyNameOne(x){
+  const opts=pickOthers(BABY_ANIMALS,x,3,o=>o.name).map(o=>({label:o.name,correct:o.name===x.name}));
+  return {prompt:"ما اسم صغير ال"+x.parent+"؟",big:x.emoji,options:opts,speak:x.name};
+}
+function qBabyParentOne(x){
+  const opts=pickOthers(BABY_ANIMALS,x,3,o=>o.parent).map(o=>({label:o.parent,correct:o.parent===x.parent}));
+  return {prompt:"'"+x.name+"' هو صغير أي حيوان؟",big:x.emoji,options:opts};
+}
+function startBabyAnimalsQuiz(){
+  const qs=shuffle(BABY_ANIMALS).map((x,i)=> i%2===0? qBabyNameOne(x):qBabyParentOne(x));
+  const qs2=shuffle(BABY_ANIMALS).map((x,i)=> i%2===0? qBabyParentOne(x):qBabyNameOne(x));
+  startEngine("gBabyAnimals","🐣 صغار الحيوانات",qs.concat(qs2),"gBabyAnimalsQuiz");
 }
 function qMaddOne(){
   const m=MUDOOD[Math.floor(Math.random()*MUDOOD.length)];
@@ -1415,24 +1587,24 @@ function qShaddaOne(){
           explain:isShadda? "نعم! "+word+" فيها شدة":"صحيح، لا شدة في "+word};
 }
 function startMaddQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qMaddOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qMaddOne());
   startEngine("gMadd","🌊 المدود",qs,"gMaddQuiz");
 }
 function startTanweenQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qTanweenOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qTanweenOne());
   startEngine("gTanween","🎗️ التنوين",qs,"gTanweenQuiz");
 }
 function startSukoonQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qSukoonOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qSukoonOne());
   startEngine("gSukoon","🛑 الحرف الساكن",qs,"gSukoonQuiz");
 }
 function startShaddaQuiz(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qShaddaOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qShaddaOne());
   startEngine("gShadda","💪 الشدة",qs,"gShaddaQuiz");
 }
 function startHarakatQuiz(){
   const qs=[];
-  for(let i=0;i<15;i++)qs.push(qHarakaOne());
+  for(let i=0;i<20;i++)qs.push(qHarakaOne());
   startEngine("harakat","✨ تدريب الحركات القصيرة",qs,"gHarakat");
 }
 function startOdd(){
@@ -1444,7 +1616,7 @@ function startPattern(){
   startEngine("gPattern","🔁 أكمل النمط",qs);
 }
 function startCount(){
-  const qs=[];for(let i=0;i<15;i++)qs.push(qCountOne());
+  const qs=[];for(let i=0;i<20;i++)qs.push(qCountOne());
   startEngine("gCount","🔢 عدّ واختر",qs);
 }
 function startFinal(){
@@ -1777,6 +1949,7 @@ const REPORT_ROWS=[
  ["English Letters","gEnLetters"],["English: Listen & Choose","gEnLetterSound"],
  ["English: Fruit Basket","gEnFruits"],["English: Animals","gEnAnimals"],
  ["التعرف على المشاعر","gEmotions"],["أكمل الإيقاع","gRhythm"],
+ ["الأضداد","gOpposites"],["الحواس الخمس","gSenses"],["أصوات الحيوانات","gAnimalSounds"],["صغار الحيوانات","gBabyAnimals"],
  ["لعبة الذاكرة","gMemory"],["الاختبار الختامي","final"]
 ];
 function renderReport(){
