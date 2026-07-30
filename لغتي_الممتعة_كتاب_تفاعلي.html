@@ -810,6 +810,7 @@ function go(name,arg){
     case "gMissingQuiz":startMissingQuiz();break;
     case "gShadow":renderShadowMatch();break;
     case "gShadowQuiz":startShadowQuiz();break;
+    case "gShadowQuiz2":startShadowQuiz2();break;
     case "gEnLetters":renderEnglishLetters();break;
     case "enLetterDetail":renderEnglishLetterDetail(arg);break;
     case "gEnLetterSound":startEnglishListen();break;
@@ -924,7 +925,7 @@ const UNITS=[
  {id:"gDiff",icon:"🔍",title:"لاحظ الفرق",desc:"قارن الصفين ولاقي الاختلاف (أسلوب ياباني)",key:"gDiff"},
  {id:"gMatch",icon:"🔗",title:"وصّل",desc:"وصّل كل اسم بصورته الصحيحة",key:"gMatch"},
  {id:"gMissing",icon:"🧩",title:"الشيء الناقص",desc:"أي صورة تكمّل المجموعة؟",key:"gMissing"},
- {id:"gShadow",icon:"🌑",title:"طابق الظل",desc:"لاحظ الظل واختر الصورة الملوّنة المطابقة",key:"gShadow"},
+ {id:"gShadow",icon:"🌑",title:"طابق الظل",desc:"مرحلتان: بالصوت ثم بدون صوت",key:null},
  {id:"gEnLetters",icon:"🔤",title:"English Letters",desc:"الحروف الإنجليزية بالصوت والصورة",key:"gEnLetters"},
  {id:"gEnLetterSound",icon:"🔊",title:"English: Listen & Choose",desc:"استمع واختر بالإنجليزي",key:"gEnLetterSound"},
  {id:"gEnFruits",icon:"🍎",title:"English: Fruit Basket",desc:"أسماء الفواكه بالإنجليزي",key:"gEnFruits"},
@@ -944,7 +945,7 @@ const UNITS=[
  {id:"report",icon:"📋",title:"تقرير المعلم",desc:"ملخص أداء الطالب للطباعة",key:null},
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
-const MAX_STARS=52*3;
+const MAX_STARS=53*3;
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -1297,13 +1298,30 @@ function renderBabyAnimals(){
 }
 /* ====================== طابق الظل ====================== */
 function renderShadowMatch(){
+  const s1=P.stars["gShadow"]||0, s2=P.stars["gShadow2"]||0;
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>🌑 طابق الظل</h2></div>'+
   '<p class="center" style="color:#5c548c">ركّز بالظل، ولاحظ شكله بدقة، ثم اختر الصورة الملوّنة اللي تطابقه</p>'+
   '<div class="haraka-cards"><div class="haraka-card">'+
   '<div style="font-size:4rem;filter:brightness(0);opacity:.82">🦁</div>'+
   '<div style="color:#7a72a8;margin-top:6px">هذا ظل الأسد 🦁</div>'+
   '</div></div>'+
-  '<div class="center mt"><button class="btn green" onclick="go(\'gShadowQuiz\')">🎮 ابدأ التدريب</button></div>';
+  '<div class="units mt">'+
+  '<div class="unit-card" onclick="go(\'gShadowQuiz\')"><div class="u-icon">🔊</div><h3>المرحلة الأولى</h3>'+
+  '<p>تدريب بالصوت — يسمع اسم الحيوان قبل ما يختار</p>'+
+  '<div class="u-stars">'+"⭐".repeat(s1)+"☆".repeat(3-s1)+'</div></div>'+
+  '<div class="unit-card" onclick="go(\'gShadowQuiz2\')"><div class="u-icon">🤫</div><h3>المرحلة الثانية</h3>'+
+  '<p>بدون صوت — يعتمد على عينه بس، والاسم يُنطق بعد الاختيار الصحيح</p>'+
+  '<div class="u-stars">'+"⭐".repeat(s2)+"☆".repeat(3-s2)+'</div></div>'+
+  '</div>';
+}
+function qShadowTwo(x){
+  const opts=pickOthers(SHADOW_ITEMS,x,3,o=>o.emoji).map(o=>({label:o.emoji,correct:o.emoji===x.emoji}));
+  const shadowHtml='<div style="font-size:5rem;filter:brightness(0);opacity:.82">'+x.emoji+'</div>';
+  return {prompt:"لاحظ الظل بعينك بس — أي صورة تطابقه؟",big:shadowHtml,options:opts,speakOnCorrect:x.name};
+}
+function startShadowQuiz2(){
+  const qs=shuffle(SHADOW_ITEMS).map(qShadowTwo);
+  startEngine("gShadow2","🤫 طابق الظل (بدون صوت)",qs,"gShadowQuiz2");
 }
 /* ====================== محرك الأسئلة العام ====================== */
 let Q=null;
@@ -1341,6 +1359,7 @@ function answer(i){
     btns[i].classList.add("correct");
     Q.score++; soundCorrect();
     document.getElementById("q-explain").textContent="✅ إجابة صحيحة!"+(q.explain? " — "+q.explain:"");
+    if(q.speakOnCorrect)setTimeout(()=>speak(q.speakOnCorrect),300);
   }else{
     btns[i].classList.add("wrong");
     btns[correctIdx].classList.add("correct");
@@ -2296,7 +2315,8 @@ const REPORT_ROWS=[
  ["الفواكه","gFruits"],["المواصلات","gTransport"],["الأرقام","gNumbersV"],
  ["أجزاء الجسم","gBody"],["الطقس","gWeather"],["الأدوات المدرسية","gSchoolTools"],["أفراد الأسرة","gFamily"],
  ["روابط الأعداد","gBonds"],["صنّف الأشياء","gClassify"],["رتّب القصة","gSequence"],["السبب والنتيجة","gCause"],
- ["لاحظ الفرق","gDiff"],["وصّل","gMatch"],["الشيء الناقص","gMissing"],["طابق الظل","gShadow"],
+ ["لاحظ الفرق","gDiff"],["وصّل","gMatch"],["الشيء الناقص","gMissing"],
+ ["طابق الظل - بالصوت","gShadow"],["طابق الظل - بدون صوت","gShadow2"],
  ["English Letters","gEnLetters"],["English: Listen & Choose","gEnLetterSound"],
  ["English: Fruit Basket","gEnFruits"],["English: Animals","gEnAnimals"],
  ["التعرف على المشاعر","gEmotions"],["أكمل الإيقاع","gRhythm"],
