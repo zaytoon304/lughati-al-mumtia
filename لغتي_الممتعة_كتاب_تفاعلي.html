@@ -195,6 +195,61 @@ footer{ text-align:center;padding:20px;color:#9a92c4;font-size:.9rem }
 }
 @keyframes toastPop{from{transform:translateX(-50%) scale(.6);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
 @keyframes toastFade{0%,72%{opacity:1}100%{opacity:0}}
+/* ====================== فن ألعاب الذكاءات المتعددة (معزولة داخل #miGameRoot) ====================== */
+#miGameRoot{--p:#6d5dfc;--p2:#00a8cc;--ok:#16a34a;--bad:#dc2626;--ink:#182033;--line:#d9deea}
+#miGameRoot{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(145deg,#eef2ff,#f8fbff 55%,#ecfeff);color:var(--ink);min-height:100vh}
+#miGameRoot *{box-sizing:border-box}
+#miGameRoot .app{max-width:1000px;margin:auto;padding:14px}
+#miGameRoot .top,#miGameRoot .card{background:#fff;border-radius:22px;box-shadow:0 12px 34px #25345d18}
+#miGameRoot .top{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+#miGameRoot .brand{font-size:clamp(22px,4vw,34px);font-weight:900}
+#miGameRoot .chips{display:flex;gap:8px;flex-wrap:wrap}
+#miGameRoot .chip{background:#eef2ff;border-radius:999px;padding:8px 12px;font-weight:900}
+#miGameRoot .card{margin-top:16px;padding:clamp(16px,4vw,28px)}
+#miGameRoot .hidden{display:none!important}
+#miGameRoot .center{text-align:center}
+#miGameRoot button,#miGameRoot input{font:inherit}
+#miGameRoot button{border:0;border-radius:15px;padding:12px 16px;font-size:17px;font-weight:900;cursor:pointer}
+#miGameRoot .primary{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+#miGameRoot .secondary{background:#edf0f6}
+#miGameRoot .danger{background:#fff0f0;color:#a61b1b}
+#miGameRoot .game-types{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
+#miGameRoot .game-card{background:#f8fafc;border:3px solid transparent;min-height:170px;padding:18px}
+#miGameRoot .game-card.active{border-color:var(--p);background:#eef2ff}
+#miGameRoot .game-icon{display:block;font-size:54px;margin-bottom:8px}
+#miGameRoot .game-card small{display:block;color:#667085;line-height:1.6;margin-top:7px}
+#miGameRoot .select-grid,#miGameRoot .levels{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+#miGameRoot .mode{min-height:100px;background:#f8fafc;border:3px solid transparent}
+#miGameRoot .mode.active,#miGameRoot .level.active{border-color:var(--p);background:#eef2ff}
+#miGameRoot .ico{display:block;font-size:38px;margin-bottom:6px}
+#miGameRoot .level{background:#f8fafc;border:3px solid transparent}
+#miGameRoot .players{max-width:600px;margin:auto}
+#miGameRoot .prow{display:grid;grid-template-columns:45px 1fr 42px;gap:8px;margin:8px 0}
+#miGameRoot .prow input{padding:11px;border:2px solid var(--line);border-radius:12px}
+#miGameRoot .grid{display:grid;grid-template-columns:repeat(3,1fr);max-width:650px;aspect-ratio:1;margin:15px auto;border:3px solid #202020;background:#fff}
+#miGameRoot .cell{border:1px solid #202020;display:grid;place-items:center;padding:4px;font-size:clamp(34px,8vw,78px)}
+#miGameRoot .cell svg{width:90%;height:90%}
+#miGameRoot .question{font-size:clamp(55px,11vw,110px);font-weight:900}
+#miGameRoot .options{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+#miGameRoot .option{position:relative;min-height:125px;background:#fff;border:3px solid var(--line);font-size:clamp(34px,6vw,65px)}
+#miGameRoot .option svg{width:84%;height:100px}
+#miGameRoot .letter{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:9px;background:#eef2ff;display:grid;place-items:center;font-size:18px}
+#miGameRoot .option.ok{border-color:var(--ok);background:#ecfdf3;animation:miPop .3s}
+#miGameRoot .option.bad{border-color:var(--bad);background:#fff1f2;animation:miShake .3s}
+@keyframes miShake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+@keyframes miPop{50%{transform:scale(1.04)}}
+#miGameRoot .feedback{min-height:34px;text-align:center;font-size:20px;font-weight:900;margin-top:10px}
+#miGameRoot .green{color:var(--ok)}
+#miGameRoot .red{color:var(--bad)}
+#miGameRoot .barbox{height:11px;background:#e7eaf1;border-radius:20px;overflow:hidden}
+#miGameRoot .bar{height:100%;background:linear-gradient(90deg,var(--p),#06b6d4)}
+#miGameRoot .banner{background:#fff7d6;border:2px solid #f5c84b;border-radius:14px;padding:11px;text-align:center;font-weight:900;margin-bottom:10px}
+#miGameRoot .actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+#miGameRoot .rank{max-width:760px;margin:auto}
+#miGameRoot .rrow{display:grid;grid-template-columns:50px 1fr auto auto auto;gap:10px;padding:12px;border-bottom:1px solid #eee}
+#miGameRoot .version{font-size:12px;color:#667085;margin-top:10px}
+#miGameRoot .back-to-book{margin-top:12px}
+@media(max-width:700px){#miGameRoot .game-types,#miGameRoot .select-grid,#miGameRoot .levels{grid-template-columns:1fr}#miGameRoot .options{grid-template-columns:repeat(2,1fr)}#miGameRoot .option{min-height:105px}#miGameRoot .rrow{grid-template-columns:45px 1fr auto}#miGameRoot .extra{display:none}}
 </style>
 </head>
 <body>
@@ -216,6 +271,87 @@ footer{ text-align:center;padding:20px;color:#9a92c4;font-size:.9rem }
   </div>
 </header>
 <main id="app"></main>
+<div id="miGameRoot" style="display:none"><div class="app">
+<header class="top"><div class="brand">🎨 فن ألعاب الذكاءات المتعددة</div><div class="chips"><div class="chip">النقاط: <span id="score">0</span></div><div class="chip">السؤال: <span id="qnum">0</span>/<span id="total">0</span></div><div class="chip">⏱ <span id="time">00:00.0</span></div></div></header>
+<section id="home" class="card center">
+<h1>اختر بوابة الذكاء</h1>
+<div class="game-types">
+<button class="game-card active" data-kind="picture"><span class="game-icon">🖼️</span>ذكاء الصور والعلاقات<small>الصور والحيوانات والفصول والأطعمة والتصنيف البصري</small></button>
+<button class="game-card" data-kind="visual"><span class="game-icon">🔷</span>المصفوفات البصرية المبتكرة<small>ألوان وأشكال واتجاهات وعدد وعلاقات صممناها داخل اللعبة</small></button>
+<button class="game-card" data-kind="iq"><span class="game-icon">🧠</span>اختبار الذكاء IQ<small>مصفوفات منطقية سوداء وبيضاء، دمج وحذف ودوران وتقاطع</small></button>
+</div>
+<h2>طريقة اللعب</h2><div class="select-grid">
+<button class="mode playmode active" data-play="single"><span class="ico">👤</span>لاعب واحد</button>
+<button class="mode playmode" data-play="multi"><span class="ico">👥</span>تحدي اللاعبين</button>
+<button id="showRank" class="mode"><span class="ico">🏆</span>لوحة الصدارة</button>
+</div>
+<h2>المستوى</h2><div class="levels">
+<button class="level active" data-level="easy">سهل<br><small>قاعدة واحدة</small></button>
+<button class="level" data-level="medium">متوسط<br><small>قاعدتان</small></button>
+<button class="level" data-level="hard">متقدم<br><small>ثلاث قواعد</small></button>
+</div>
+<div class="select-grid"><button id="soundBtn" class="mode active"><span class="ico">🔔</span>المؤثرات تعمل</button><button id="testSound" class="mode"><span class="ico">🎵</span>اختبار المؤثر</button><button id="randomAll" class="mode"><span class="ico">🎲</span>تحدي مختلط</button></div>
+<div id="playersBox" class="players hidden"><h2>أسماء المتنافسين</h2><div id="players"></div><button id="addPlayer" class="secondary">➕ إضافة لاعب</button><p>كل لاعب يحل 5 ألغاز من البوابة والمستوى المختارين.</p></div>
+<button id="start" class="primary">ابدأ اللعب</button><div class="version">الإصدار 7.0 — ثلاث ألعاب في منصة واحدة</div>
+<div class="back-to-book"><button class="secondary" onclick="closeMultiIntelGame()">🏠 رجوع لكتاب لغتي الممتعة</button></div>
+</section>
+<section id="game" class="card hidden"><div id="banner" class="banner hidden"></div><h2 id="title" class="center"></h2><div class="barbox"><div id="bar" class="bar"></div></div><div id="grid" class="grid"></div><div id="options" class="options"></div><div id="feedback" class="feedback"></div><div class="actions"><button id="homeBtn" class="secondary">العودة للبداية</button></div></section>
+<section id="finish" class="card center hidden"><div style="font-size:75px">🎉</div><h1>انتهت الجولة</h1><h2 id="finalScore"></h2><p>الوقت: <strong id="finalTime"></strong></p><div class="actions"><button id="again" class="primary">إعادة الجولة</button><button id="home2" class="secondary">البداية</button></div></section>
+<section id="between" class="card center hidden"><div style="font-size:75px">🏁</div><h1>انتهى دور <span id="doneName"></span></h1><p id="doneResult"></p><button id="next" class="primary">ابدأ اللاعب التالي</button></section>
+<section id="ranking" class="card center hidden"><div style="font-size:70px">🏆</div><h1>لوحة الصدارة</h1><div id="rank" class="rank"></div><div class="actions"><button id="newComp" class="primary">مسابقة جديدة</button><button id="home3" class="secondary">البداية</button><button id="clear" class="danger">مسح النتائج</button></div></section>
+</div></div>
+<script>
+(function(){
+if('speechSynthesis'in window)try{speechSynthesis.cancel()}catch(e){}
+const $=id=>document.getElementById(id);let kind='picture',play='single',level='easy',sound=true,mixed=false,round=[],idx=0,score=0,locked=false,startTime=0,timer=null,elapsed=0,players=[],pindex=0,results=[],ctx=null;
+function show(id){['home','game','finish','between','ranking'].forEach(x=>$(x).classList.add('hidden'));$(id).classList.remove('hidden')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fmt(ms){let s=ms/1000,m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+(s%60).toFixed(1).padStart(4,'0')}
+function audio(){try{if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume()}catch(e){}}
+function tone(f,d,delay=0){if(!sound)return;audio();if(!ctx)return;let o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(.001,ctx.currentTime+delay);g.gain.exponentialRampToValueAtTime(.07,ctx.currentTime+delay+.01);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+d);o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+d+.02)}
+function effect(t){if(t==='ok'){tone(650,.12);tone(880,.18,.1)}else{tone(210,.18);tone(150,.22,.12)}}
+function svg(body){return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${body}</svg>`}
+const line=(x1,y1,x2,y2,w=4)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111" stroke-width="${w}" stroke-linecap="round"/>`;
+const dot=(x,y,r=6,c='#111')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;const sq=(x,y,s=16,fill='none',c='#111')=>`<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" stroke="${c}" stroke-width="4"/>`;
+function geom(shape,color='#6d5dfc',n=1,rot=0){let b='';for(let i=0;i<n;i++){let dx=(i%3-1)*18,dy=Math.floor(i/3)*18-5;if(shape==='circle')b+=`<circle cx="${50+dx}" cy="${50+dy}" r="12" fill="${color}"/>`;if(shape==='square')b+=`<rect x="${38+dx}" y="${38+dy}" width="24" height="24" rx="4" fill="${color}"/>`;if(shape==='triangle')b+=`<polygon points="${50+dx},34 ${34+dx},64 ${66+dx},64" fill="${color}"/>`}return svg(`<g transform="rotate(${rot} 50 50)">${b}</g>`)}
+function iqAngle(dir,dots){let a=[-1.57,0,1.57,3.14][dir],sp=.55,cx=50,cy=55,r=32,b=line(cx,cy,cx+r*Math.cos(a-sp),cy+r*Math.sin(a-sp),3)+line(cx,cy,cx+r*Math.cos(a+sp),cy+r*Math.sin(a+sp),3);for(let i=0;i<dots;i++)b+=dot(42+(i%3)*10,42+Math.floor(i/3)*10,4);return svg(b)}
+function iqCross(dp,sp){let b=line(50,15,50,85,3)+line(15,50,85,50,3);if(dp)b+=dot(dp[0],dp[1],5);if(sp)b+=sq(sp[0],sp[1],18);return svg(b)}
+function blocks(rows,cols,omit=[]){let b='';for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)if(!omit.some(m=>m[0]===x&&m[1]===y))b+=sq(25+x*18,25+y*18,14,'#111');return svg(b)}
+const pictureSets=[
+['🏖️','☀️','🕶️','⛄','❄️','🧣','🌧️','☂️','🌂'],['🕊️','🦔','🐇','🐢','🦊','🦜','🦩','🦑','🐠'],['🍭','🍉','🥪','🍌','🌭','🍬','🍓','🍭','🍔'],
+['🚗','🚌','🚕','🚌','🚕','🚗','🚕','🚗','🚌'],['🍎','🍌','🍇','🍌','🍇','🍎','🍇','🍎','🍌']];
+function makePicture(lv){let a=shuffle(pictureSets)[0].slice();let answer=a[8];a[8]=null;let pool=shuffle(['🔥','🎓','🚀','🐊','🐠','🍔','🌽','🍬','🚌','🍌','🍇','🚲'].filter(x=>x!==answer)).slice(0,3);let opts=shuffle([answer,...pool]);return{title:lv==='easy'?'أكمل الصورة الناقصة':lv==='medium'?'اكتشف العلاقة بين الصفوف':'اكتشف العلاقة الأفقية والرأسية معًا',cells:a,opts,answer:opts.indexOf(answer)}}
+function makeVisual(lv){let shapes=['circle','square','triangle'],colors=['#ef4444','#3b82f6','#16a34a'];let s=shapes[Math.floor(Math.random()*3)],c=colors[Math.floor(Math.random()*3)];
+if(lv==='easy'){let cells=[];for(let i=1;i<=9;i++)cells.push(geom(s,c,(i-1)%3+1));let ans=cells[8];cells[8]=null;let opts=shuffle([ans,geom(s,c,1),geom(s,c,2),geom(shapes[(shapes.indexOf(s)+1)%3],c,3)]);return{title:'أكمل تدرج العدد',cells,opts,answer:opts.indexOf(ans)}}
+if(lv==='medium'){let cells=[];for(let r=0;r<3;r++)for(let q=0;q<3;q++)cells.push(geom(shapes[(r+q)%3],colors[r],1));let ans=cells[8];cells[8]=null;let opts=shuffle([ans,geom(shapes[0],colors[0],1),geom(shapes[1],colors[1],1),geom(shapes[2],colors[2],1)]);return{title:'تابع الشكل واللون معًا',cells,opts,answer:opts.indexOf(ans)}}
+let cells=[];for(let r=0;r<3;r++)for(let q=0;q<3;q++)cells.push(geom(shapes[(r+q)%3],colors[(r+2*q)%3],(r+q)%3+1,(r*90+q*45)));let ans=cells[8];cells[8]=null;let opts=shuffle([ans,geom(shapes[0],colors[1],2,45),geom(shapes[1],colors[2],3,90),geom(shapes[2],colors[0],1,180)]);return{title:'اكتشف الشكل واللون والعدد والدوران',cells,opts,answer:opts.indexOf(ans)}}
+function makeIQ(lv){let t=Math.floor(Math.random()*3);
+if(t===0){let cells=[blocks(2,1),blocks(2,2),blocks(2,3),blocks(2,2),blocks(2,2),blocks(2,3),blocks(2,3),blocks(2,3),null],ans=blocks(2,3);let opts=shuffle([ans,blocks(2,2),blocks(1,3),blocks(2,3,[[1,1]])]);return{title:'أكمل نمو عدد المربعات',cells,opts,answer:opts.indexOf(ans)}}
+if(t===1){let cells=[];for(let r=0;r<3;r++)for(let c=0;c<3;c++)cells.push(iqAngle((r+c)%4,lv==='easy'?1:lv==='medium'?((r+c)%3)+1:((2*r+c)%3)+1));let ans=cells[8];cells[8]=null;let opts=shuffle([ans,iqAngle(2,1),iqAngle(3,2),iqAngle(0,3)]);return{title:'تابع الاتجاه وعدد النقاط',cells,opts,answer:opts.indexOf(ans)}}
+let pos=[[22,22],[22,62],[62,62],[62,22]],cells=[];for(let r=0;r<3;r++)for(let c=0;c<3;c++)cells.push(iqCross(pos[(r+c)%4],pos[(r+2*c+1)%4]));let ans=cells[8];cells[8]=null;let opts=shuffle([ans,iqCross(pos[0],pos[2]),iqCross(pos[1],pos[3]),iqCross(pos[2],pos[0])]);return{title:'تتبع موضع الدائرة والمربع',cells,opts,answer:opts.indexOf(ans)}}
+function makeQuestion(){let k=mixed?['picture','visual','iq'][Math.floor(Math.random()*3)]:kind;return k==='picture'?makePicture(level):k==='visual'?makeVisual(level):makeIQ(level)}
+function buildRound(n){let arr=[];for(let i=0;i<n;i++)arr.push(makeQuestion());return arr}
+function startClock(){startTime=performance.now();clearInterval(timer);timer=setInterval(()=>{$('time').textContent=fmt(performance.now()-startTime)},100)}
+function stopClock(){elapsed=performance.now()-startTime;clearInterval(timer)}
+function begin(){audio();if(play==='multi'){players=[...document.querySelectorAll('.pname')].map(x=>x.value.trim()).filter(Boolean);if(players.length<2){alert('اكتب اسم لاعبين على الأقل');return}pindex=0;results=[];beginPlayer()}else{round=buildRound(level==='easy'?6:level==='medium'?8:10);idx=0;score=0;$('total').textContent=round.length;$('banner').classList.add('hidden');show('game');startClock();render()}}
+function beginPlayer(){round=buildRound(5);idx=0;score=0;$('total').textContent=5;$('banner').classList.remove('hidden');$('banner').textContent='دور اللاعب: '+players[pindex];show('game');startClock();render()}
+function render(){locked=false;let q=round[idx];$('score').textContent=score;$('qnum').textContent=idx+1;$('title').textContent=q.title;$('bar').style.width=(idx/round.length*100)+'%';$('feedback').textContent='';$('feedback').className='feedback';$('grid').innerHTML=q.cells.map(x=>`<div class="cell ${x===null?'question':''}">${x===null?'؟':x}</div>`).join('');$('options').innerHTML='';q.opts.forEach((x,i)=>{let b=document.createElement('button');b.className='option';b.innerHTML=`<span class="letter">${['أ','ب','ج','د'][i]}</span>${x}`;b.onclick=()=>choose(i,b);$('options').appendChild(b)})}
+function choose(n,b){if(locked)return;let q=round[idx];if(n===q.answer){locked=true;score++;b.classList.add('ok');$('feedback').textContent='إجابة صحيحة';$('feedback').className='feedback green';effect('ok');setTimeout(()=>{idx++;idx>=round.length?finishRound():render()},600)}else{b.classList.add('bad');$('feedback').textContent='حاول مرة أخرى';$('feedback').className='feedback red';effect('bad');setTimeout(()=>b.classList.remove('bad'),450)}}
+function finishRound(){stopClock();if(play==='single'){$('finalScore').textContent='النتيجة: '+score+'/'+round.length;$('finalTime').textContent=fmt(elapsed);saveResult({name:'لاعب فردي',score,total:round.length,time:elapsed,kind:mixed?'مختلط':kind,level});if(window.setStars&&window.starsFor){window.setStars('gMultiIntel',window.starsFor(score,round.length));}show('finish')}else{results.push({name:players[pindex],score,total:5,time:elapsed,kind:mixed?'مختلط':kind,level});$('doneName').textContent=players[pindex];$('doneResult').textContent=score+'/5 — '+fmt(elapsed);pindex++;pindex<players.length?show('between'):saveCompetition()}}
+function saveResult(r){let old=JSON.parse(localStorage.getItem('multiIntelligenceRank')||'[]');old.push(r);localStorage.setItem('multiIntelligenceRank',JSON.stringify(old.slice(-100)))}
+function saveCompetition(){results.forEach(saveResult);renderRank(results);show('ranking')}
+function renderRank(data){let d=(data&&data.length?data:JSON.parse(localStorage.getItem('multiIntelligenceRank')||'[]')).slice().sort((a,b)=>(b.score/b.total)-(a.score/a.total)||a.time-b.time);$('rank').innerHTML=d.map((r,i)=>`<div class="rrow"><strong>${i<3?['🥇','🥈','🥉'][i]:i+1}</strong><span>${r.name}</span><span>${r.score}/${r.total}</span><span class="extra">${fmt(r.time)}</span><span class="extra">${r.kind} — ${r.level}</span></div>`).join('')||'<p>لا توجد نتائج بعد.</p>'}
+function addPlayer(name=''){let row=document.createElement('div');row.className='prow';row.innerHTML=`<span>👤</span><input class="pname" placeholder="اسم اللاعب" value="${name}"><button class="danger">✕</button>`;row.querySelector('button').onclick=()=>row.remove();$('players').appendChild(row)}
+document.querySelectorAll('.game-card').forEach(b=>b.onclick=()=>{document.querySelectorAll('.game-card').forEach(x=>x.classList.remove('active'));b.classList.add('active');kind=b.dataset.kind;mixed=false});
+document.querySelectorAll('.playmode').forEach(b=>b.onclick=()=>{document.querySelectorAll('.playmode').forEach(x=>x.classList.remove('active'));b.classList.add('active');play=b.dataset.play;$('playersBox').classList.toggle('hidden',play!=='multi')});
+document.querySelectorAll('.level').forEach(b=>b.onclick=()=>{document.querySelectorAll('.level').forEach(x=>x.classList.remove('active'));b.classList.add('active');level=b.dataset.level});
+$('soundBtn').onclick=()=>{sound=!sound;$('soundBtn').classList.toggle('active',sound);$('soundBtn').innerHTML=`<span class="ico">${sound?'🔔':'🔕'}</span>${sound?'المؤثرات تعمل':'المؤثرات متوقفة'}`};
+$('testSound').onclick=()=>effect('ok');$('randomAll').onclick=()=>{mixed=true;document.querySelectorAll('.game-card').forEach(x=>x.classList.remove('active'));alert('تم اختيار التحدي المختلط من الألعاب الثلاثة')};
+$('start').onclick=begin;$('addPlayer').onclick=()=>addPlayer();$('next').onclick=beginPlayer;$('again').onclick=begin;$('homeBtn').onclick=$('home2').onclick=$('home3').onclick=()=>{clearInterval(timer);show('home')};
+$('showRank').onclick=()=>{renderRank();show('ranking')};$('newComp').onclick=()=>{play='multi';$('playersBox').classList.remove('hidden');show('home')};$('clear').onclick=()=>{localStorage.removeItem('multiIntelligenceRank');renderRank([])};
+addPlayer('اللاعب الأول');addPlayer('اللاعب الثاني');
+})();
+</script>
 <footer>لغتي الممتعة — كتاب إلكتروني تفاعلي للصف الأول الابتدائي — من إنتاج <b>صوفيا ويونس</b> ✨</footer>
 <script>
 "use strict";
@@ -811,6 +947,7 @@ function go(name,arg){
     case "gShadow":renderShadowMatch();break;
     case "gShadowQuiz":startShadowQuiz();break;
     case "gShadowQuiz2":startShadowQuiz2();break;
+    case "gMultiIntel":openMultiIntelGame();break;
     case "gEnLetters":renderEnglishLetters();break;
     case "enLetterDetail":renderEnglishLetterDetail(arg);break;
     case "gEnLetterSound":startEnglishListen();break;
@@ -853,6 +990,22 @@ function go(name,arg){
   }
 }
 function backBtn(){return '<button class="btn small ghost" onclick="go(\'home\')">→ رجوع</button>';}
+/* ====================== دخول/خروج فن ألعاب الذكاءات المتعددة ====================== */
+function openMultiIntelGame(){
+  const h=document.querySelector("header"), f=document.querySelector("footer"), g=document.getElementById("miGameRoot");
+  if(h)h.style.display="none";
+  if(f)f.style.display="none";
+  app.style.display="none";
+  if(g)g.style.display="block";
+}
+function closeMultiIntelGame(){
+  const h=document.querySelector("header"), f=document.querySelector("footer"), g=document.getElementById("miGameRoot");
+  if(h)h.style.display="";
+  if(f)f.style.display="";
+  app.style.display="";
+  if(g)g.style.display="none";
+  go("home");
+}
 /* ====================== الملفات الشخصية: الشاشات ====================== */
 function renderProfilePicker(){
   const names=Object.keys(PROFILES_STORE.profiles);
@@ -926,6 +1079,7 @@ const UNITS=[
  {id:"gMatch",icon:"🔗",title:"وصّل",desc:"وصّل كل اسم بصورته الصحيحة",key:"gMatch"},
  {id:"gMissing",icon:"🧩",title:"الشيء الناقص",desc:"أي صورة تكمّل المجموعة؟",key:"gMissing"},
  {id:"gShadow",icon:"🌑",title:"طابق الظل",desc:"مرحلتان: بالصوت ثم بدون صوت",key:null},
+ {id:"gMultiIntel",icon:"🎨",title:"فن ألعاب الذكاءات المتعددة",desc:"صور وعلاقات، مصفوفات بصرية، واختبار IQ",key:"gMultiIntel"},
  {id:"gEnLetters",icon:"🔤",title:"English Letters",desc:"الحروف الإنجليزية بالصوت والصورة",key:"gEnLetters"},
  {id:"gEnLetterSound",icon:"🔊",title:"English: Listen & Choose",desc:"استمع واختر بالإنجليزي",key:"gEnLetterSound"},
  {id:"gEnFruits",icon:"🍎",title:"English: Fruit Basket",desc:"أسماء الفواكه بالإنجليزي",key:"gEnFruits"},
@@ -945,7 +1099,7 @@ const UNITS=[
  {id:"report",icon:"📋",title:"تقرير المعلم",desc:"ملخص أداء الطالب للطباعة",key:null},
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
-const MAX_STARS=53*3;
+const MAX_STARS=54*3;
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -2317,6 +2471,7 @@ const REPORT_ROWS=[
  ["روابط الأعداد","gBonds"],["صنّف الأشياء","gClassify"],["رتّب القصة","gSequence"],["السبب والنتيجة","gCause"],
  ["لاحظ الفرق","gDiff"],["وصّل","gMatch"],["الشيء الناقص","gMissing"],
  ["طابق الظل - بالصوت","gShadow"],["طابق الظل - بدون صوت","gShadow2"],
+ ["فن ألعاب الذكاءات المتعددة","gMultiIntel"],
  ["English Letters","gEnLetters"],["English: Listen & Choose","gEnLetterSound"],
  ["English: Fruit Basket","gEnFruits"],["English: Animals","gEnAnimals"],
  ["التعرف على المشاعر","gEmotions"],["أكمل الإيقاع","gRhythm"],
