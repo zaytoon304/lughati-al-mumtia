@@ -489,8 +489,30 @@ const ANIMALS_V=[
  {name:"أسد",emoji:"🦁"},{name:"فيل",emoji:"🐘"},{name:"قرد",emoji:"🐒"},
  {name:"كلب",emoji:"🐶"},{name:"قطة",emoji:"🐱"},{name:"حصان",emoji:"🐴"},
  {name:"دب",emoji:"🐻"},{name:"نمر",emoji:"🐯"},{name:"بقرة",emoji:"🐄"},{name:"غزال",emoji:"🦌"},
- {name:"أرنب",emoji:"🐰"},{name:"بطة",emoji:"🦆"},{name:"ثعلب",emoji:"🦊"},
- {name:"دجاجة",emoji:"🐔"},{name:"بومة",emoji:"🦉"},{name:"سلحفاة",emoji:"🐢"}
+ {name:"أرنب",emoji:"🐰"},{name:"ثعلب",emoji:"🦊"},{name:"ذئب",emoji:"🐺"},
+ {name:"جمل",emoji:"🐫"},{name:"خروف",emoji:"🐑"},{name:"ماعز",emoji:"🐐"},
+ {name:"باندا",emoji:"🐼"},{name:"كوالا",emoji:"🐨"},{name:"زرافة",emoji:"🦒"},
+ {name:"فرس النهر",emoji:"🦛"},{name:"وحيد القرن",emoji:"🦏"},{name:"غوريلا",emoji:"🦍"},
+ {name:"حمار وحشي",emoji:"🦓"},{name:"حمار",emoji:"🫏"},{name:"كنغر",emoji:"🦘"},
+ {name:"سنجاب",emoji:"🐿️"},{name:"خفاش",emoji:"🦇"},{name:"فأر",emoji:"🐭"}
+];
+const BIRDS=[
+ {name:"دجاجة",emoji:"🐔"},{name:"ديك",emoji:"🐓"},{name:"بطة",emoji:"🦆"},
+ {name:"بومة",emoji:"🦉"},{name:"نسر",emoji:"🦅"},{name:"غراب",emoji:"🐦‍⬛"},
+ {name:"ببغاء",emoji:"🦜"},{name:"بطريق",emoji:"🐧"},{name:"طاووس",emoji:"🦚"},
+ {name:"حمامة",emoji:"🕊️"},{name:"فلامنجو",emoji:"🦩"},{name:"عصفور",emoji:"🐦"},
+ {name:"ديك رومي",emoji:"🦃"},{name:"بجعة",emoji:"🦢"}
+];
+const FISH_V=[
+ {name:"سمكة",emoji:"🐟"},{name:"سمكة استوائية",emoji:"🐠"},
+ {name:"سمكة منتفخة",emoji:"🐡"},{name:"قرش",emoji:"🦈"}
+];
+const BUGS_REPTILES=[
+ {name:"نحلة",emoji:"🐝"},{name:"فراشة",emoji:"🦋"},{name:"نملة",emoji:"🐜"},
+ {name:"عنكبوت",emoji:"🕷️"},{name:"خنفساء",emoji:"🐞"},{name:"جرادة",emoji:"🦗"},
+ {name:"صرصور",emoji:"🪳"},{name:"بعوضة",emoji:"🦟"},{name:"دودة",emoji:"🐛"},
+ {name:"حلزون",emoji:"🐌"},{name:"ثعبان",emoji:"🐍"},{name:"تمساح",emoji:"🐊"},
+ {name:"سحلية",emoji:"🦎"},{name:"سلحفاة",emoji:"🐢"}
 ];
 const SHAPES=[
  {name:"دائرة",emoji:'<div style="display:inline-block;vertical-align:middle;width:40px;height:40px;border-radius:50%;background:#7c4dff;margin:4px"></div>'},
@@ -587,7 +609,10 @@ const VOCAB_CATS={
  gFamily:{title:"أفراد الأسرة",icon:"👨‍👩‍👧‍👦",pool:FAMILY},
  gEnFruits:{title:"English: Fruit Basket",icon:"🍎",pool:EN_FRUITS,lang:"en"},
  gEnAnimals:{title:"English: Animals",icon:"🦁",pool:EN_ANIMALS,lang:"en"},
- gSeaLife:{title:"ما في البحار",icon:"🐬",pool:SEA_LIFE}
+ gSeaLife:{title:"ما في البحار",icon:"🐬",pool:SEA_LIFE},
+ gBirds:{title:"الطيور",icon:"🦜",pool:BIRDS},
+ gFishV:{title:"الأسماك",icon:"🐟",pool:FISH_V},
+ gBugsReptiles:{title:"الحشرات والزواحف",icon:"🐝",pool:BUGS_REPTILES}
 };
 /* ====================== مهارات تفكير إضافية ====================== */
 const CLASSIFY_PAIRS=[
@@ -965,6 +990,12 @@ function go(name,arg){
     case "gEnAnimalsQuiz":startVocabQuiz("gEnAnimals");break;
     case "gSeaLife":renderVocabIntro("gSeaLife");break;
     case "gSeaLifeQuiz":startVocabQuiz("gSeaLife");break;
+    case "gBirds":renderVocabIntro("gBirds");break;
+    case "gBirdsQuiz":startVocabQuiz("gBirds");break;
+    case "gFishV":renderVocabIntro("gFishV");break;
+    case "gFishVQuiz":startVocabQuiz("gFishV");break;
+    case "gBugsReptiles":renderVocabIntro("gBugsReptiles");break;
+    case "gBugsReptilesQuiz":startVocabQuiz("gBugsReptiles");break;
     case "gEmotions":renderEmotions();break;
     case "gEmotionsQuiz":startEmotionsQuiz();break;
     case "gRhythm":renderRhythm();break;
@@ -1095,6 +1126,9 @@ const UNITS=[
  {id:"gEnFruits",icon:"🍎",title:"English: Fruit Basket",desc:"أسماء الفواكه بالإنجليزي",key:"gEnFruits"},
  {id:"gEnAnimals",icon:"🦁",title:"English: Animals",desc:"أسماء الحيوانات بالإنجليزي",key:"gEnAnimals"},
  {id:"gSeaLife",icon:"🐬",title:"ما في البحار",desc:"قرش، حوت، دولفين، أخطبوط وأكثر",key:"gSeaLife"},
+ {id:"gBirds",icon:"🦜",title:"الطيور",desc:"دجاجة، ديك، بومة، نسر، ببغاء وأكثر",key:"gBirds"},
+ {id:"gFishV",icon:"🐟",title:"الأسماك",desc:"أنواع من الأسماك",key:"gFishV"},
+ {id:"gBugsReptiles",icon:"🐝",title:"الحشرات والزواحف",desc:"نحلة، فراشة، ثعبان، تمساح وأكثر",key:"gBugsReptiles"},
  {id:"gEmotions",icon:"💛",title:"التعرف على المشاعر",desc:"مهارة اجتماعية وعاطفية: اعرف شعورك وشعور غيرك",key:"gEmotions"},
  {id:"gRhythm",icon:"🎵",title:"أكمل الإيقاع",desc:"مهارة موسيقية: تعرّف على نمط الإيقاع",key:"gRhythm"},
  {id:"gOpposites",icon:"↔️",title:"الأضداد",desc:"فوق/تحت، كبير/صغير، طويل/قصير وأكثر",key:"gOpposites"},
@@ -1110,7 +1144,7 @@ const UNITS=[
  {id:"report",icon:"📋",title:"تقرير المعلم",desc:"ملخص أداء الطالب للطباعة",key:null},
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
-const MAX_STARS=55*3;
+const MAX_STARS=58*3;
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -2485,6 +2519,7 @@ const REPORT_ROWS=[
  ["فن ألعاب الذكاءات المتعددة","gMultiIntel"],
  ["English Letters","gEnLetters"],["English: Listen & Choose","gEnLetterSound"],
  ["English: Fruit Basket","gEnFruits"],["English: Animals","gEnAnimals"],["ما في البحار","gSeaLife"],
+ ["الطيور","gBirds"],["الأسماك","gFishV"],["الحشرات والزواحف","gBugsReptiles"],
  ["التعرف على المشاعر","gEmotions"],["أكمل الإيقاع","gRhythm"],
  ["الأضداد","gOpposites"],["الحواس الخمس","gSenses"],["أصوات الحيوانات","gAnimalSounds"],["صغار الحيوانات","gBabyAnimals"],
  ["الذاكرة - المرحلة ١","gMemoryL0"],["الذاكرة - المرحلة ٢","gMemoryL1"],["الذاكرة - المرحلة ٣","gMemoryL2"],
