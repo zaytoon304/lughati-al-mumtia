@@ -14,6 +14,9 @@
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
+body.dyslexia-mode{letter-spacing:.03em;line-height:1.9}
+body.dyslexia-mode *{letter-spacing:.03em}
+body.colorblind-mode{--c1:#0072B2;--c2:#E69F00;--c3:#009E73;--c4:#CC79A7;--c5:#56B4E9}
 body{
   font-family:"Baloo Bhaijaan 2","Segoe UI",Tahoma,Arial,sans-serif;
   background:linear-gradient(160deg,#fff8e1 0%,#e8f5ff 55%,#f3e5ff 100%);
@@ -50,6 +53,13 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 80px}
   text-align:center; padding:26px 16px 10px;
 }
 .hero .big-emoji{font-size:3.4rem}
+.mascot-bubble{
+  display:inline-flex;align-items:center;gap:10px;background:#fff;border:3px solid #ffd54f;
+  border-radius:20px;padding:10px 18px;margin:8px auto;max-width:min(92%,480px);cursor:pointer;
+  box-shadow:var(--shadow);text-align:right;
+}
+.mascot-face{font-size:1.8rem;flex-shrink:0}
+.mascot-text{font-weight:700;font-size:.95rem;color:var(--ink)}
 .hero h1{margin:8px 0 4px;font-size:1.9rem}
 .hero p{margin:0 0 8px;font-size:1.1rem;color:#5c548c}
 .progress-wrap{max-width:420px;margin:14px auto 4px}
@@ -849,6 +859,34 @@ function speakEN(text){
     speechSynthesis.speak(u);
   }catch(e){}
 }
+/* ====================== تجربة النطق (التعرّف على الصوت) ====================== */
+function practiceSpeak(btn,expected){
+  const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const out=document.getElementById("speak-result");
+  if(!Rec){
+    if(out)out.textContent="متصفحك ما يدعم التعرّف على الصوت — جرّب كروم على جهاز حقيقي";
+    return;
+  }
+  try{
+    const rec=new Rec();
+    rec.lang="ar-SA"; rec.maxAlternatives=3; rec.interimResults=false;
+    if(out)out.textContent="🎤 يسمعك الآن... قل الكلمة";
+    if(btn)btn.disabled=true;
+    rec.onresult=(e)=>{
+      const said=(e.results&&e.results[0]&&e.results[0][0]&&e.results[0][0].transcript)||"";
+      const norm=s=>String(s).replace(/[ً-ٰٟ]/g,"").trim();
+      const match=norm(said).includes(norm(expected))||norm(expected).includes(norm(said));
+      if(out)out.textContent= match? "✅ رائع! سمعتك تقولها صح": "🎧 سمعتك تحاول! حاول مرة ثانية بصوت أوضح";
+      if(match){soundCorrect();confetti();}else{soundWrong();}
+    };
+    rec.onerror=()=>{ if(out)out.textContent="ما قدرت أسمعك بوضوح، جرّب تاني"; };
+    rec.onend=()=>{ if(btn)btn.disabled=false; };
+    rec.start();
+  }catch(e){
+    if(out)out.textContent="تعذّر تشغيل الميكروفون";
+    if(btn)btn.disabled=false;
+  }
+}
 /* تشغيل ملف صوتي بشري إن وُجد بجانب الكتاب، وإلا القارئ الآلي */
 function playOrSpeak(key,text){
   let done=false;
@@ -871,7 +909,19 @@ function showToast(text){
 /* ====================== حفظ التقدم ====================== */
 /* ====================== الملفات الشخصية (كل طفل له تقدمه الخاص) ====================== */
 const AVATARS=["🐰","🦁","🐻","🦊","🐼","🐸","🦄","🐶","🐱","🦋","🐧","🐢"];
-function defaultP(){return {stars:{},visited:[],traced:[],visitedEN:[],name:"",cert:false,voiceName:"",avatar:"🙂",streak:0,lastPlay:"",best:0,mistakes:{}};}
+function defaultP(){return {stars:{},visited:[],traced:[],visitedEN:[],name:"",cert:false,voiceName:"",avatar:"🙂",streak:0,lastPlay:"",best:0,mistakes:{},dyslexiaMode:false,colorblindMode:false};}
+function applyAccessibilityModes(){
+  document.body.classList.toggle("dyslexia-mode",!!P.dyslexiaMode);
+  document.body.classList.toggle("colorblind-mode",!!P.colorblindMode);
+}
+function toggleDyslexiaMode(){
+  P.dyslexiaMode=!P.dyslexiaMode; saveP(); applyAccessibilityModes();
+  const b=document.getElementById("dyslexia-toggle"); if(b)b.className="btn small"+(P.dyslexiaMode?" orange":" ghost");
+}
+function toggleColorblindMode(){
+  P.colorblindMode=!P.colorblindMode; saveP(); applyAccessibilityModes();
+  const b=document.getElementById("colorblind-toggle"); if(b)b.className="btn small"+(P.colorblindMode?" orange":" ghost");
+}
 let PROFILES_STORE={profiles:{},active:null};
 let P=defaultP();
 function loadProfilesStore(){
@@ -909,6 +959,7 @@ function setActiveProfile(name){
   P=PROFILES_STORE.profiles[name];
   saveProfilesStore();
   updatePlayerChip();
+  applyAccessibilityModes();
   bumpStreak();
 }
 function createProfile(name,avatar){
@@ -934,6 +985,7 @@ function go(name,arg){
   switch(name){
     case "home":renderHome();break;
     case "letters":renderLetters();break;
+    case "lettersWorksheet":renderLettersWorksheet();break;
     case "letterDetail":renderLetterDetail(arg);break;
     case "harakat":renderHarakat();break;
     case "gMadd":renderMadd();break;
@@ -1145,6 +1197,16 @@ const UNITS=[
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
 const MAX_STARS=58*3;
+const MASCOT_NAME="نجّوم";
+function mascotLine(){
+  const st=totalStars();
+  const nm=P.name? (" يا "+P.name):"";
+  if(st===0)return "أهلاً"+nm+"! أنا "+MASCOT_NAME+" 🌟، هيا نبدأ رحلتنا سوا!";
+  if(P.streak>1)return "برافو"+nm+"! سلسلتك "+toArNum(P.streak)+" يوم متواصل، أنا فخور فيك!";
+  if(st<30)return "أحسنت"+nm+"! استمر، كل نجمة تقربك أكتر!";
+  if(st<90)return "ماشاء الله"+nm+"! أنت بطل حقيقي في لغتي الممتعة!";
+  return "واو"+nm+"! أنت نجم لامع فعلاً، فخور جداً فيك! 🏆";
+}
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -1157,6 +1219,8 @@ function renderHome(){
   app.innerHTML=
    '<div class="hero"><div class="big-emoji">🌟</div>'+
    '<h1>أهلاً بك في لغتي الممتعة!</h1>'+
+   '<div class="mascot-bubble" onclick="speak(\''+mascotLine().replace(/'/g,"")+'\')">'+
+   '<span class="mascot-face">⭐</span><span class="mascot-text">'+mascotLine()+'</span></div>'+
    '<p>كتاب تفاعلي للصف الأول الابتدائي: حروف وحركات وألعاب ومهارات تفكير</p>'+
    '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
    '<div class="progress-label">أكملت '+toArNum(pct)+'٪ من نجوم الكتاب ('+toArNum(totalStars())+' من '+toArNum(MAX_STARS)+')</div></div></div>'+
@@ -1172,7 +1236,23 @@ function renderLetters(){
   });
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>📖 الحروف الهجائية</h2></div>'+
    '<p class="center" style="color:#5c548c">اضغط على أي حرف لتتعلمه بالصوت والصورة — الحروف الخضراء زرتها من قبل</p>'+
-   '<div class="letters-grid">'+tiles+'</div>';
+   '<div class="letters-grid">'+tiles+'</div>'+
+   '<div class="center mt"><button class="btn small ghost" onclick="go(\'lettersWorksheet\')">🖨️ اطبع كراسة تتبّع الحروف</button></div>';
+}
+function renderLettersWorksheet(){
+  let cards="";
+  LETTERS.forEach(x=>{
+    cards+='<div style="width:31%;min-width:150px;display:inline-block;text-align:center;border:2px dashed #ccc;border-radius:14px;padding:10px;margin:6px 1%;vertical-align:top">'+
+    '<div style="font-size:4rem;font-weight:800;color:#fff;-webkit-text-stroke:2px #333">'+x.l+'</div>'+
+    '<div style="font-size:1.1rem;font-weight:700">'+x.name+'</div>'+
+    '<div style="font-size:2rem">'+x.emoji+'</div>'+
+    '<div style="font-size:1.1rem">'+x.word+'</div></div>';
+  });
+  app.innerHTML='<div class="screen-title no-print">'+backBtn()+'<h2>🖨️ كراسة تتبّع الحروف</h2></div>'+
+  '<p class="center no-print" style="color:#5c548c">اطبع هذه الصفحة، ودع الطفل يتتبّع كل حرف بقلمه فوق الشكل المرسوم</p>'+
+  '<div class="center mt no-print"><button class="btn blue" onclick="window.print()">🖨️ اطبع الكراسة</button></div>'+
+  '<div class="print-area" style="text-align:center;margin-top:14px">'+
+  '<h2 class="center">لغتي الممتعة — كراسة تتبّع الحروف</h2>'+cards+'</div>';
 }
 function renderLetterDetail(i){
   const x=LETTERS[i], f=letterForms(x.l);
@@ -1186,7 +1266,9 @@ function renderLetterDetail(i){
    '<div class="letter-detail">'+
    '<div class="the-letter">'+x.l+'</div>'+
    '<div class="letter-name">'+x.name+'</div>'+
-   '<button class="btn orange mt" onclick="playOrSpeak(\'letter_'+i+'\',\''+x.name+'. '+x.word+'\')">🔊 استمع</button>'+
+   '<button class="btn orange mt" onclick="playOrSpeak(\'letter_'+i+'\',\''+x.name+'. '+x.word+'\')">🔊 استمع</button> '+
+   '<button class="btn pink mt" onclick="practiceSpeak(this,\''+x.name+'\')">🎤 جرّب تنطقها</button>'+
+   '<div class="q-explain" id="speak-result"></div>'+
    '<div class="forms-row">'+
      '<div class="form-box"><div class="f-val">'+f.first+'</div><div class="f-lab">أول الكلمة</div></div>'+
      '<div class="form-box"><div class="f-val">'+f.middle+'</div><div class="f-lab">وسط الكلمة</div></div>'+
@@ -2377,6 +2459,12 @@ function renderGuide(){
   '<select id="voice-select" onchange="chooseVoice(this.value)" style="font-family:inherit;font-size:1rem;padding:8px 12px;border-radius:12px;border:2px solid #e0d7ff;max-width:90%"></select>'+
   '<div class="mt"><button class="btn small orange" onclick="tryVoice()">🔊 جرّب هذا الصوت</button></div>'+
   '</div>'+
+  '<h3>♿ إتاحة وسهولة القراءة</h3>'+
+  '<p>خيارات تساعد الأطفال اللي عندهم صعوبات تعلّم بسيطة أو حساسية بصرية.</p>'+
+  '<div class="center" style="background:var(--soft);border-radius:16px;padding:14px;margin:10px 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'+
+  '<button class="btn small'+(P.dyslexiaMode?" orange":" ghost")+'" id="dyslexia-toggle" onclick="toggleDyslexiaMode()">🔤 خط أسهل للقراءة</button>'+
+  '<button class="btn small'+(P.colorblindMode?" orange":" ghost")+'" id="colorblind-toggle" onclick="toggleColorblindMode()">🎨 ألوان آمنة لعمى الألوان</button>'+
+  '</div>'+
   '<h3>🎙️ ترقية الصوت بتسجيلات بشرية (للنسخ الاحترافية)</h3>'+
   '<p>يدعم الكتاب استبدال الصوت الآلي بتسجيلات بشرية تلقائياً: أنشئ مجلداً باسم audio بجانب ملف الكتاب، وضع فيه ملفات بصيغة mp3 بأسماء letter_0 حتى letter_27 لأصوات الحروف (بترتيب الهجائية من الألف إلى الياء)، وword_0 حتى word_27 للكلمات. متى وُجد الملف يُشغَّل تلقائياً بدلاً من القارئ الآلي، وإن لم يوجد يعود الكتاب للقارئ الآلي دون أي خطأ.</p>'+
   '<h3>💾 حفظ التقدم</h3>'+
@@ -2578,6 +2666,7 @@ loadProfilesStore();
 if(window.speechSynthesis)loadVoices();
 if(PROFILES_STORE.active&&PROFILES_STORE.profiles[PROFILES_STORE.active]){
   updatePlayerChip();
+  applyAccessibilityModes();
   renderHome();
   bumpStreak();
 }else{
