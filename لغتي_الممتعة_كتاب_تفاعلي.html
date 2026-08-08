@@ -545,6 +545,13 @@ const FAMILY=[
  {name:"أب",emoji:"👨"},{name:"أم",emoji:"👩"},{name:"ولد",emoji:"👦"},
  {name:"بنت",emoji:"👧"},{name:"جد",emoji:"👴"},{name:"جدة",emoji:"👵"},{name:"طفل رضيع",emoji:"👶"}
 ];
+const SEA_LIFE=[
+ {name:"قرش",emoji:"🦈"},{name:"حوت",emoji:"🐳"},{name:"دولفين",emoji:"🐬"},
+ {name:"أخطبوط",emoji:"🐙"},{name:"سمكة",emoji:"🐠"},{name:"سلحفاة بحرية",emoji:"🐢"},
+ {name:"قنديل البحر",emoji:"🪼"},{name:"سرطان",emoji:"🦀"},{name:"كركند",emoji:"🦞"},
+ {name:"حبار",emoji:"🦑"},{name:"روبيان",emoji:"🦐"},{name:"فقمة",emoji:"🦭"},
+ {name:"مرجان",emoji:"🪸"},{name:"صدفة",emoji:"🐚"}
+];
 const EN_FRUITS=[
  {name:"Apple",emoji:"🍎"},{name:"Banana",emoji:"🍌"},{name:"Grapes",emoji:"🍇"},
  {name:"Watermelon",emoji:"🍉"},{name:"Strawberry",emoji:"🍓"},{name:"Orange",emoji:"🍊"},
@@ -579,7 +586,8 @@ const VOCAB_CATS={
  gSchoolTools:{title:"الأدوات المدرسية",icon:"🎒",pool:SCHOOL_TOOLS},
  gFamily:{title:"أفراد الأسرة",icon:"👨‍👩‍👧‍👦",pool:FAMILY},
  gEnFruits:{title:"English: Fruit Basket",icon:"🍎",pool:EN_FRUITS,lang:"en"},
- gEnAnimals:{title:"English: Animals",icon:"🦁",pool:EN_ANIMALS,lang:"en"}
+ gEnAnimals:{title:"English: Animals",icon:"🦁",pool:EN_ANIMALS,lang:"en"},
+ gSeaLife:{title:"ما في البحار",icon:"🐬",pool:SEA_LIFE}
 };
 /* ====================== مهارات تفكير إضافية ====================== */
 const CLASSIFY_PAIRS=[
@@ -955,6 +963,8 @@ function go(name,arg){
     case "gEnFruitsQuiz":startVocabQuiz("gEnFruits");break;
     case "gEnAnimals":renderVocabIntro("gEnAnimals");break;
     case "gEnAnimalsQuiz":startVocabQuiz("gEnAnimals");break;
+    case "gSeaLife":renderVocabIntro("gSeaLife");break;
+    case "gSeaLifeQuiz":startVocabQuiz("gSeaLife");break;
     case "gEmotions":renderEmotions();break;
     case "gEmotionsQuiz":startEmotionsQuiz();break;
     case "gRhythm":renderRhythm();break;
@@ -1084,6 +1094,7 @@ const UNITS=[
  {id:"gEnLetterSound",icon:"🔊",title:"English: Listen & Choose",desc:"استمع واختر بالإنجليزي",key:"gEnLetterSound"},
  {id:"gEnFruits",icon:"🍎",title:"English: Fruit Basket",desc:"أسماء الفواكه بالإنجليزي",key:"gEnFruits"},
  {id:"gEnAnimals",icon:"🦁",title:"English: Animals",desc:"أسماء الحيوانات بالإنجليزي",key:"gEnAnimals"},
+ {id:"gSeaLife",icon:"🐬",title:"ما في البحار",desc:"قرش، حوت، دولفين، أخطبوط وأكثر",key:"gSeaLife"},
  {id:"gEmotions",icon:"💛",title:"التعرف على المشاعر",desc:"مهارة اجتماعية وعاطفية: اعرف شعورك وشعور غيرك",key:"gEmotions"},
  {id:"gRhythm",icon:"🎵",title:"أكمل الإيقاع",desc:"مهارة موسيقية: تعرّف على نمط الإيقاع",key:"gRhythm"},
  {id:"gOpposites",icon:"↔️",title:"الأضداد",desc:"فوق/تحت، كبير/صغير، طويل/قصير وأكثر",key:"gOpposites"},
@@ -1099,7 +1110,7 @@ const UNITS=[
  {id:"report",icon:"📋",title:"تقرير المعلم",desc:"ملخص أداء الطالب للطباعة",key:null},
  {id:"guide",icon:"👩‍🏫",title:"دليل المعلم والأسرة",desc:"طريقة الاستخدام والأهداف",key:null}
 ];
-const MAX_STARS=54*3;
+const MAX_STARS=55*3;
 function renderHome(){
   const pct=Math.min(100,Math.round(totalStars()/MAX_STARS*100));
   let tiles="";
@@ -2473,7 +2484,7 @@ const REPORT_ROWS=[
  ["طابق الظل - بالصوت","gShadow"],["طابق الظل - بدون صوت","gShadow2"],
  ["فن ألعاب الذكاءات المتعددة","gMultiIntel"],
  ["English Letters","gEnLetters"],["English: Listen & Choose","gEnLetterSound"],
- ["English: Fruit Basket","gEnFruits"],["English: Animals","gEnAnimals"],
+ ["English: Fruit Basket","gEnFruits"],["English: Animals","gEnAnimals"],["ما في البحار","gSeaLife"],
  ["التعرف على المشاعر","gEmotions"],["أكمل الإيقاع","gRhythm"],
  ["الأضداد","gOpposites"],["الحواس الخمس","gSenses"],["أصوات الحيوانات","gAnimalSounds"],["صغار الحيوانات","gBabyAnimals"],
  ["الذاكرة - المرحلة ١","gMemoryL0"],["الذاكرة - المرحلة ٢","gMemoryL1"],["الذاكرة - المرحلة ٣","gMemoryL2"],
