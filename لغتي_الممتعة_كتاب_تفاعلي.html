@@ -338,6 +338,7 @@ footer{ text-align:center;padding:20px;color:#9a92c4;font-size:.9rem }
     <button class="lgh-btn" id="lghUnlockBtn" type="button">🔓 فتح الآن</button>
 
     <div class="lgh-admin hidden" id="lghAdminBox">
+      <button class="lgh-btn lgh-btn-ghost hidden" id="lghCloseAdminBtn" type="button" style="width:100%;margin-bottom:14px">✕ إغلاق والرجوع للكتاب</button>
       <h3>🔑 توليد رمز اشتراك (للمعلم فقط)</h3>
       <input class="lgh-input" id="lghAdminLabel" type="text" placeholder="اسم الطالب (اختياري، يساعدك تتذكره)">
       <input class="lgh-input" id="lghAdminDevice" type="text" placeholder="رمز جهاز الطالب" maxlength="6" style="text-transform:uppercase">
@@ -519,7 +520,7 @@ const LughatiLock=(function(){
     }
   });
 
-  /* لمسة سرية: اضغط الشعار 5 مرات لفتح مولّد الرموز */
+  /* لمسة سرية: اضغط الشعار 5 مرات لفتح مولّد الرموز (بشاشة القفل) */
   $('lghLogoTap').onclick=()=>{
     logoTaps++;
     clearTimeout(logoTapTimer);
@@ -530,6 +531,26 @@ const LughatiLock=(function(){
       $('lghAdminBox').scrollIntoView({behavior:'smooth'});
       renderHistory();
     }
+  };
+
+  /* نفس اللمسة السرية، بس من شعار الهيدر — يفتح لوحة التحكم حتى لو الكتاب مفتوح أصلاً */
+  let headerLogoTaps=0,headerLogoTapTimer=null;
+  document.getElementById('lghHeaderLogoTap')?.addEventListener('click',()=>{
+    headerLogoTaps++;
+    clearTimeout(headerLogoTapTimer);
+    headerLogoTapTimer=setTimeout(()=>{headerLogoTaps=0},1500);
+    if(headerLogoTaps>=5){
+      headerLogoTaps=0;
+      $('lghLock').classList.remove('hidden');
+      $('lghAdminBox').classList.remove('hidden');
+      $('lghCloseAdminBtn').classList.remove('hidden');
+      $('lghAdminBox').scrollIntoView({behavior:'smooth'});
+      renderHistory();
+    }
+  });
+
+  $('lghCloseAdminBtn').onclick=()=>{
+    $('lghLock').classList.add('hidden');
   };
 
   $('lghAdminGenBtn').onclick=()=>{
@@ -559,7 +580,7 @@ const LughatiLock=(function(){
 
 <header>
   <div class="brand">
-    <svg viewBox="0 0 64 64" width="42" height="42" aria-hidden="true">
+    <svg id="lghHeaderLogoTap" viewBox="0 0 64 64" width="42" height="42" aria-hidden="true" style="cursor:pointer">
       <defs><linearGradient id="lgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c4dff"/><stop offset="1" stop-color="#ff4081"/></linearGradient></defs>
       <circle cx="32" cy="34" r="28" fill="url(#lgA)"/>
       <path d="M14 44c6-4 12-4 18 0c6-4 12-4 18 0V26c-6-4-12-4-18 0c-6-4-12-4-18 0z" fill="#ffffff"/>
