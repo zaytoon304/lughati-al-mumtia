@@ -293,6 +293,18 @@ footer{ text-align:center;padding:20px;color:#9a92c4;font-size:.9rem }
   font-family:inherit;font-size:1rem;margin-bottom:10px}
 .lgh-result{background:#eafff0;border:2px solid #7cd992;border-radius:14px;padding:12px;margin-top:12px;text-align:center}
 .lgh-result code{font-size:1.05rem;font-weight:800;color:#1b8a3a;direction:ltr;display:block;word-break:break-all}
+.lgh-hist-row{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:8px;text-align:right}
+.lgh-hist-row__info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lgh-hist-row__label{font-weight:800;font-size:.92rem}
+.lgh-hist-row__code{font-size:.78rem;color:#7a72a8;direction:ltr;word-break:break-all}
+.lgh-hist-row__exp{font-size:.78rem}
+.lgh-hist-row__exp--expired{color:#e53935}
+.lgh-hist-row__exp--ok{color:#1b8a3a}
+.lgh-hist-row__actions{display:flex;gap:6px;flex-shrink:0}
+.lgh-hist-row__btn{border:none;background:#fff;border-radius:10px;padding:6px 10px;font-size:.85rem;
+  font-family:inherit;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.lgh-hist-empty{color:#7a72a8;font-size:.9rem;text-align:center;padding:10px}
 </style>
 </head>
 <body>
@@ -327,6 +339,7 @@ footer{ text-align:center;padding:20px;color:#9a92c4;font-size:.9rem }
 
     <div class="lgh-admin hidden" id="lghAdminBox">
       <h3>🔑 توليد رمز اشتراك (للمعلم فقط)</h3>
+      <input class="lgh-input" id="lghAdminLabel" type="text" placeholder="اسم الطالب (اختياري، يساعدك تتذكره)">
       <input class="lgh-input" id="lghAdminDevice" type="text" placeholder="رمز جهاز الطالب" maxlength="6" style="text-transform:uppercase">
       <select id="lghAdminDuration">
         <option value="1">ساعة واحدة</option>
@@ -344,6 +357,8 @@ footer{ text-align:center;padding:20px;color:#9a92c4;font-size:.9rem }
       <button class="lgh-btn" id="lghAdminGenBtn" type="button">توليد الرمز</button>
       <div class="lgh-result hidden" id="lghAdminResult"><code id="lghAdminCode"></code></div>
       <button class="lgh-btn lgh-btn-ghost" id="lghAdminGrantBtn" type="button" style="margin-top:10px">🔓 فعّل هذا الجهاز كأدمن دائم</button>
+      <h3 style="margin-top:20px">📋 الرموز المُنشأة</h3>
+      <div id="lghHistList"></div>
     </div>
   </div>
 </div>
@@ -408,7 +423,22 @@ const LughatiLock=(function(){
   function grantTimed(expiry){localStorage.setItem(ACCESS_KEY,JSON.stringify({expiry,grantedAt:Date.now()}))}
   function grantPermanent(){localStorage.setItem(ACCESS_KEY,JSON.stringify({permanent:true,grantedAt:Date.now()}))}
 
-  return{getDeviceId,generateCode,validateCode,hasAccess,grantTimed,grantPermanent};
+  /* ── سجل الرموز الصادرة (يُخزَّن على جهاز المعلم فقط) ── */
+  const HIST_KEY='lgh_lic_history';
+  function getHistory(){
+    try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]')}catch(e){return[]}
+  }
+  function saveHistoryEntry(entry){
+    const h=getHistory();
+    h.unshift({...entry,id:Date.now()});
+    if(h.length>200)h.length=200;
+    localStorage.setItem(HIST_KEY,JSON.stringify(h));
+  }
+  function deleteHistoryEntry(id){
+    localStorage.setItem(HIST_KEY,JSON.stringify(getHistory().filter(e=>e.id!==id)));
+  }
+
+  return{getDeviceId,generateCode,validateCode,hasAccess,grantTimed,grantPermanent,getHistory,saveHistoryEntry,deleteHistoryEntry};
 })();
 
 (function(){
@@ -452,6 +482,43 @@ const LughatiLock=(function(){
   };
   $('lghCodeInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('lghUnlockBtn').click()});
 
+  function fmtExp(ms){
+    const d=new Date(ms);
+    return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+  }
+
+  function renderHistory(){
+    const list=LughatiLock.getHistory();
+    const wrap=$('lghHistList');
+    if(!list.length){wrap.innerHTML='<p class="lgh-hist-empty">لم تُنشئ أي رموز بعد</p>';return}
+    wrap.innerHTML=list.map(e=>{
+      const isExp=Date.now()>e.expiry;
+      return `
+        <div class="lgh-hist-row">
+          <div class="lgh-hist-row__info">
+            <span class="lgh-hist-row__label">${(e.label||'بدون اسم').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))} — ${e.deviceId}</span>
+            <span class="lgh-hist-row__code">${e.code}</span>
+            <span class="lgh-hist-row__exp ${isExp?'lgh-hist-row__exp--expired':'lgh-hist-row__exp--ok'}">${isExp?'✕ منتهي':'✓ صالح حتى'} ${fmtExp(e.expiry)}</span>
+          </div>
+          <div class="lgh-hist-row__actions">
+            <button class="lgh-hist-row__btn" data-hist-copy="${e.code}">نسخ</button>
+            <button class="lgh-hist-row__btn" data-hist-del="${e.id}">حذف</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  document.addEventListener('click',(e)=>{
+    const copyBtn=e.target.closest('[data-hist-copy]');
+    if(copyBtn){navigator.clipboard?.writeText(copyBtn.dataset.histCopy);copyBtn.textContent='✅';setTimeout(()=>{copyBtn.textContent='نسخ'},1200);return}
+    const delBtn=e.target.closest('[data-hist-del]');
+    if(delBtn){
+      if(!confirm('حذف هذا الرمز من السجل؟'))return;
+      LughatiLock.deleteHistoryEntry(parseInt(delBtn.dataset.histDel,10));
+      renderHistory();
+    }
+  });
+
   /* لمسة سرية: اضغط الشعار 5 مرات لفتح مولّد الرموز */
   $('lghLogoTap').onclick=()=>{
     logoTaps++;
@@ -461,17 +528,23 @@ const LughatiLock=(function(){
       logoTaps=0;
       $('lghAdminBox').classList.remove('hidden');
       $('lghAdminBox').scrollIntoView({behavior:'smooth'});
+      renderHistory();
     }
   };
 
   $('lghAdminGenBtn').onclick=()=>{
     const dev=$('lghAdminDevice').value.trim().toUpperCase();
     if(dev.length!==6){alert('اكتب رمز جهاز الطالب كاملاً (6 أحرف)');return}
+    const label=$('lghAdminLabel').value.trim();
     const hours=parseInt($('lghAdminDuration').value,10);
-    const expiry=new Date(Date.now()+hours*3600000);
-    const code=LughatiLock.generateCode(expiry,dev);
+    const expiryDate=new Date(Date.now()+hours*3600000);
+    const code=LughatiLock.generateCode(expiryDate,dev);
     $('lghAdminCode').textContent=code;
     $('lghAdminResult').classList.remove('hidden');
+    LughatiLock.saveHistoryEntry({label,deviceId:dev,code,expiry:expiryDate.getTime()});
+    renderHistory();
+    $('lghAdminLabel').value='';
+    $('lghAdminDevice').value='';
   };
 
   $('lghAdminGrantBtn').onclick=()=>{
