@@ -448,11 +448,11 @@ const LughatiLock=(function(){
   let logoTaps=0,logoTapTimer=null;
 
   function boot(){
+    $('lghDeviceId').textContent=LughatiLock.getDeviceId();
     if(LughatiLock.hasAccess()){
       $('lghLock').classList.add('hidden');
       startLughatiApp();
     }else{
-      $('lghDeviceId').textContent=LughatiLock.getDeviceId();
       $('lghLock').classList.remove('hidden');
     }
   }
@@ -533,9 +533,12 @@ const LughatiLock=(function(){
     }
   };
 
-  /* نفس اللمسة السرية، بس من شعار الهيدر — يفتح لوحة التحكم حتى لو الكتاب مفتوح أصلاً */
+  /* نفس اللمسة السرية، بس من شعار الهيدر — يفتح لوحة التحكم حتى لو الكتاب مفتوح أصلاً.
+     مربوطة بـ document (لا بالعنصر نفسه) لأن الهيدر يُرسَم بالـHTML بعد هذا السكربت،
+     فما كان العنصر موجوداً وقت ربط الحدث مباشرة عليه. */
   let headerLogoTaps=0,headerLogoTapTimer=null;
-  document.getElementById('lghHeaderLogoTap')?.addEventListener('click',()=>{
+  document.addEventListener('click',(e)=>{
+    if(!e.target.closest('#lghHeaderLogoTap'))return;
     headerLogoTaps++;
     clearTimeout(headerLogoTapTimer);
     headerLogoTapTimer=setTimeout(()=>{headerLogoTaps=0},1500);
