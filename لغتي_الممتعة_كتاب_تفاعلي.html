@@ -926,7 +926,7 @@ const ENGLISH_LETTERS=[
 const MATCH_POOLS=[COLORS,ANIMALS_V,FRUITS,TRANSPORT,BODY,WEATHER,SCHOOL_TOOLS,FAMILY,SHAPES];
 const VOCAB_CATS={
  gColors:{title:"الألوان",icon:"🌈",pool:COLORS},
- gAnimalsV:{title:"الحيوانات",icon:"🦁",pool:ANIMALS_V},
+ gAnimalsV:{title:"الحيوانات",icon:"🦁",pool:ANIMALS_V,audioPrefix:"animal_name"},
  gShapes:{title:"الأشكال",icon:"🔺",pool:SHAPES},
  gFruits:{title:"الفواكه",icon:"🍎",pool:FRUITS},
  gTransport:{title:"المواصلات",icon:"🚗",pool:TRANSPORT},
@@ -1998,19 +1998,20 @@ function qListenPicOne(x){
   return {prompt:"استمع ثم اضغط على الصورة الصحيحة",speak:x.word,big:"🔊",options:opts,
           explain:x.word+" تبدأ بحرف ال"+x.name};
 }
-function qListenPicGeneric(pool,x,speakFn){
+function qListenPicGeneric(pool,x,speakFn,playKey){
   const opts=pickOthers(pool,x,3,o=>o.emoji).map(o=>({label:o.emoji,correct:o.emoji===x.emoji}));
   return {prompt:speakFn==="speakEN"?"Listen then tap the correct picture":"استمع ثم اضغط على الصورة الصحيحة",
-          speak:x.name,speakFn:speakFn,big:"🔊",options:opts};
+          speak:x.name,speakFn:speakFn,playKey:playKey,big:"🔊",options:opts};
 }
 function renderVocabIntro(catId){
   const c=VOCAB_CATS[catId];
   const fn=c.lang==="en"?"speakEN":"speak";
   let cards="";
-  c.pool.forEach(x=>{
+  c.pool.forEach((x,i)=>{
+    const call=c.audioPrefix? "playOrSpeak('"+c.audioPrefix+"_"+i+"','"+x.name+"')" : fn+"('"+x.name+"')";
     cards+='<div class="haraka-card" dir="'+(c.lang==="en"?"ltr":"rtl")+'"><div style="font-size:3rem">'+x.emoji+'</div>'+
     '<div class="h-name">'+x.name+'</div>'+
-    '<button class="btn small orange" onclick="'+fn+'(\''+x.name+'\')">🔊 '+(c.lang==="en"?"Listen":"استمع")+'</button></div>';
+    '<button class="btn small orange" onclick="'+call+'">🔊 '+(c.lang==="en"?"Listen":"استمع")+'</button></div>';
   });
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>'+c.icon+' '+c.title+'</h2></div>'+
   '<p class="center" style="color:#5c548c">استمع لاسم كل صورة، ثم جرب اللعبة</p>'+
@@ -2020,7 +2021,8 @@ function renderVocabIntro(catId){
 function startVocabQuiz(catId){
   if(catId==="gNumbersV"){startNumbersVQuiz();return;}
   const c=VOCAB_CATS[catId];
-  const qs=shuffle(c.pool).map(x=>qListenPicGeneric(c.pool,x,c.lang==="en"?"speakEN":undefined));
+  const qs=shuffle(c.pool).map(x=>qListenPicGeneric(c.pool,x,c.lang==="en"?"speakEN":undefined,
+    c.audioPrefix?c.audioPrefix+"_"+c.pool.indexOf(x):undefined));
   startEngine(catId,c.icon+' '+c.title,qs,catId+"Quiz");
 }
 function qNumberSquareOne(){
