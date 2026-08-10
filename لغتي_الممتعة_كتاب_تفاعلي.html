@@ -260,9 +260,224 @@ footer{ text-align:center;padding:20px;color:#9a92c4;font-size:.9rem }
 #miGameRoot .version{font-size:12px;color:#667085;margin-top:10px}
 #miGameRoot .back-to-book{margin-top:12px}
 @media(max-width:700px){#miGameRoot .game-types,#miGameRoot .select-grid,#miGameRoot .levels{grid-template-columns:1fr}#miGameRoot .options{grid-template-columns:repeat(2,1fr)}#miGameRoot .option{min-height:105px}#miGameRoot .rrow{grid-template-columns:45px 1fr auto}#miGameRoot .extra{display:none}}
+
+/* ══════════════════════════════════════════
+   🔒 شاشة القفل / الاشتراك (عالمية التصميم)
+   ══════════════════════════════════════════ */
+#lghLock{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:linear-gradient(160deg,#1a1035 0%,#2a1a5e 55%,#1a1035 100%);
+  font-family:"Baloo Bhaijaan 2","Segoe UI",Tahoma,Arial,sans-serif;overflow-y:auto}
+#lghLock.hidden{display:none}
+.lgh-card{width:100%;max-width:420px;background:#fff;border-radius:28px;padding:32px 26px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center;margin:auto}
+.lgh-logo{width:64px;height:64px;margin:0 auto 12px;cursor:pointer;user-select:none}
+.lgh-card h1{margin:0 0 4px;font-size:1.5rem;color:var(--ink)}
+.lgh-card .lgh-sub{margin:0 0 22px;color:#7a72a8;font-size:.98rem}
+.lgh-device-box{background:var(--soft);border:2px dashed #c9bdfa;border-radius:16px;padding:14px;margin-bottom:18px}
+.lgh-device-box p{margin:0 0 8px;font-size:.85rem;color:#7a72a8;font-weight:700}
+.lgh-device-id{font-size:1.3rem;font-weight:800;letter-spacing:.18em;color:var(--c1);direction:ltr}
+.lgh-device-actions{display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap}
+.lgh-input{width:100%;box-sizing:border-box;padding:14px 16px;border:2px solid #e0d7ff;border-radius:16px;
+  font-size:1.05rem;font-family:inherit;text-align:center;letter-spacing:.08em;margin-bottom:12px;direction:ltr}
+.lgh-input:focus{outline:none;border-color:var(--c1)}
+.lgh-btn{width:100%;padding:15px;border:none;border-radius:16px;background:var(--c1);color:#fff;
+  font-weight:800;font-size:1.08rem;font-family:inherit;cursor:pointer;box-shadow:var(--shadow)}
+.lgh-btn:active{transform:scale(.97)}
+.lgh-btn-wa{background:#25D366;font-size:.95rem;padding:11px 16px;width:auto}
+.lgh-btn-ghost{background:#fff;color:var(--ink);border:2px solid #e0d7ff;font-size:.9rem;padding:9px 14px;width:auto}
+.lgh-err{color:#e53935;font-weight:700;font-size:.92rem;min-height:1.3em;margin:4px 0 12px}
+.lgh-admin{border-top:2px solid #f0ecff;margin-top:22px;padding-top:18px;text-align:right}
+.lgh-admin h3{font-size:1rem;margin:0 0 12px;text-align:center}
+.lgh-admin select{width:100%;box-sizing:border-box;padding:12px;border:2px solid #e0d7ff;border-radius:14px;
+  font-family:inherit;font-size:1rem;margin-bottom:10px}
+.lgh-result{background:#eafff0;border:2px solid #7cd992;border-radius:14px;padding:12px;margin-top:12px;text-align:center}
+.lgh-result code{font-size:1.05rem;font-weight:800;color:#1b8a3a;direction:ltr;display:block;word-break:break-all}
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════
+     🔒 شاشة القفل / الاشتراك
+     ══════════════════════════════════════════ -->
+<div id="lghLock">
+  <div class="lgh-card">
+    <svg class="lgh-logo" id="lghLogoTap" viewBox="0 0 64 64" aria-hidden="true">
+      <defs><linearGradient id="lgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c4dff"/><stop offset="1" stop-color="#ff4081"/></linearGradient></defs>
+      <circle cx="32" cy="34" r="28" fill="url(#lgB)"/>
+      <path d="M14 44c6-4 12-4 18 0c6-4 12-4 18 0V26c-6-4-12-4-18 0c-6-4-12-4-18 0z" fill="#ffffff"/>
+      <path d="M32 26v18" stroke="#e0d7ff" stroke-width="2"/>
+      <path d="M32 2l2.6 5.4l6 .9l-4.3 4.2l1 5.9l-5.3-2.8l-5.3 2.8l1-5.9l-4.3-4.2l6-.9z" fill="#ffd54f"/>
+    </svg>
+    <h1>لغتي الممتعة</h1>
+    <p class="lgh-sub">أدخل رمز الاشتراك للمتابعة</p>
+
+    <div class="lgh-device-box">
+      <p>رمز جهازك — أرسله لنا لتفعيل الاشتراك</p>
+      <div class="lgh-device-id" id="lghDeviceId">------</div>
+      <div class="lgh-device-actions">
+        <button class="lgh-btn lgh-btn-ghost" id="lghCopyDevice" type="button">📋 نسخ الرمز</button>
+        <button class="lgh-btn lgh-btn-wa" id="lghWaBtn" type="button">💬 تواصل واتساب</button>
+      </div>
+    </div>
+
+    <input class="lgh-input" id="lghCodeInput" type="text" placeholder="LGHA-XXXXXXX-XXXXX" maxlength="20" autocomplete="off">
+    <p class="lgh-err" id="lghErr"></p>
+    <button class="lgh-btn" id="lghUnlockBtn" type="button">🔓 فتح الآن</button>
+
+    <div class="lgh-admin hidden" id="lghAdminBox">
+      <h3>🔑 توليد رمز اشتراك (للمعلم فقط)</h3>
+      <input class="lgh-input" id="lghAdminDevice" type="text" placeholder="رمز جهاز الطالب" maxlength="6" style="text-transform:uppercase">
+      <select id="lghAdminDuration">
+        <option value="24">يوم واحد</option>
+        <option value="72">3 أيام</option>
+        <option value="168">أسبوع</option>
+        <option value="720" selected>شهر (30 يوم)</option>
+        <option value="4320">6 أشهر</option>
+        <option value="8760">سنة كاملة</option>
+      </select>
+      <button class="lgh-btn" id="lghAdminGenBtn" type="button">توليد الرمز</button>
+      <div class="lgh-result hidden" id="lghAdminResult"><code id="lghAdminCode"></code></div>
+      <button class="lgh-btn lgh-btn-ghost" id="lghAdminGrantBtn" type="button" style="margin-top:10px">🔓 فعّل هذا الجهاز كأدمن دائم</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   🔒 نظام القفل — رموز ذاتية التحقق، بدون سيرفر
+   نفس فكرة أكاديمية زيتون بالضبط، بملح مختلف
+   ══════════════════════════════════════════ */
+const LughatiLock=(function(){
+  const SALT='LughatiAlMumtia_SecureKey_2026_ar';
+  const DEVICE_KEY='lgh_device_id';
+  const ACCESS_KEY='lgh_device_access';
+  const CHARS='0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+  function getDeviceId(){
+    let id=localStorage.getItem(DEVICE_KEY);
+    if(!id){
+      const arr=new Uint8Array(6);
+      crypto.getRandomValues(arr);
+      id=Array.from(arr).map(b=>CHARS[b%32]).join('');
+      localStorage.setItem(DEVICE_KEY,id);
+    }
+    return id;
+  }
+
+  function hash(str){
+    let h=0x811C9DC5;
+    for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);h>>>=0}
+    return h.toString(36).toUpperCase().slice(-5).padStart(5,'0');
+  }
+
+  function generateCode(expiryDate,deviceId){
+    const hours=Math.floor(expiryDate.getTime()/3600000);
+    const expStr=hours.toString(36).toUpperCase().padStart(7,'0');
+    const dId=(deviceId||'').trim().toUpperCase();
+    return `LGHA-${expStr}-${hash(expStr+dId+SALT)}`;
+  }
+
+  function validateCode(raw){
+    const code=(raw||'').trim().toUpperCase().replace(/\s+/g,'');
+    const parts=code.split('-');
+    if(parts.length!==3||parts[0]!=='LGHA')return null;
+    const expStr=parts[1],hashGot=parts[2];
+    const hashExp=hash(expStr+getDeviceId()+SALT);
+    if(hashGot!==hashExp)return'wrong-device';
+    const hours=parseInt(expStr,36);
+    if(isNaN(hours))return null;
+    const expiry=hours*3600000;
+    return Date.now()>expiry?'expired':expiry;
+  }
+
+  function hasAccess(){
+    try{
+      const d=JSON.parse(localStorage.getItem(ACCESS_KEY)||'null');
+      if(!d)return false;
+      if(d.permanent)return true;
+      return d.expiry&&Date.now()<d.expiry;
+    }catch(e){return false}
+  }
+
+  function grantTimed(expiry){localStorage.setItem(ACCESS_KEY,JSON.stringify({expiry,grantedAt:Date.now()}))}
+  function grantPermanent(){localStorage.setItem(ACCESS_KEY,JSON.stringify({permanent:true,grantedAt:Date.now()}))}
+
+  return{getDeviceId,generateCode,validateCode,hasAccess,grantTimed,grantPermanent};
+})();
+
+(function(){
+  const WA_NUMBER='966583492250';
+  const $=id=>document.getElementById(id);
+  let logoTaps=0,logoTapTimer=null;
+
+  function boot(){
+    if(LughatiLock.hasAccess()){
+      $('lghLock').classList.add('hidden');
+      startLughatiApp();
+    }else{
+      $('lghDeviceId').textContent=LughatiLock.getDeviceId();
+      $('lghLock').classList.remove('hidden');
+    }
+  }
+
+  $('lghCopyDevice').onclick=()=>{
+    navigator.clipboard?.writeText(LughatiLock.getDeviceId());
+    $('lghCopyDevice').textContent='✅ تم النسخ';
+    setTimeout(()=>{$('lghCopyDevice').textContent='📋 نسخ الرمز'},1600);
+  };
+
+  $('lghWaBtn').onclick=()=>{
+    const msg=encodeURIComponent(`مرحباً، أريد اشتراك في "لغتي الممتعة" — رمز جهازي: ${LughatiLock.getDeviceId()}`);
+    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,'_blank');
+  };
+
+  $('lghUnlockBtn').onclick=()=>{
+    const raw=$('lghCodeInput').value;
+    const result=LughatiLock.validateCode(raw);
+    const err=$('lghErr');
+    if(result===null){err.textContent='❌ الرمز غير صحيح'}
+    else if(result==='wrong-device'){err.textContent='❌ هذا الرمز مخصص لجهاز آخر'}
+    else if(result==='expired'){err.textContent='⏰ انتهت صلاحية هذا الرمز'}
+    else{
+      err.textContent='';
+      LughatiLock.grantTimed(result);
+      boot();
+    }
+  };
+  $('lghCodeInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('lghUnlockBtn').click()});
+
+  /* لمسة سرية: اضغط الشعار 5 مرات لفتح مولّد الرموز */
+  $('lghLogoTap').onclick=()=>{
+    logoTaps++;
+    clearTimeout(logoTapTimer);
+    logoTapTimer=setTimeout(()=>{logoTaps=0},1500);
+    if(logoTaps>=5){
+      logoTaps=0;
+      $('lghAdminBox').classList.remove('hidden');
+      $('lghAdminBox').scrollIntoView({behavior:'smooth'});
+    }
+  };
+
+  $('lghAdminGenBtn').onclick=()=>{
+    const dev=$('lghAdminDevice').value.trim().toUpperCase();
+    if(dev.length!==6){alert('اكتب رمز جهاز الطالب كاملاً (6 أحرف)');return}
+    const hours=parseInt($('lghAdminDuration').value,10);
+    const expiry=new Date(Date.now()+hours*3600000);
+    const code=LughatiLock.generateCode(expiry,dev);
+    $('lghAdminCode').textContent=code;
+    $('lghAdminResult').classList.remove('hidden');
+  };
+
+  $('lghAdminGrantBtn').onclick=()=>{
+    LughatiLock.grantPermanent();
+    alert('تم تفعيل هذا الجهاز كأدمن دائم');
+    boot();
+  };
+
+  window.lghStartBoot=boot;
+})();
+</script>
+
 <header>
   <div class="brand">
     <svg viewBox="0 0 64 64" width="42" height="42" aria-hidden="true">
@@ -2662,16 +2877,19 @@ function confetti(){
   }
 }
 /* ====================== التشغيل ====================== */
-loadProfilesStore();
-if(window.speechSynthesis)loadVoices();
-if(PROFILES_STORE.active&&PROFILES_STORE.profiles[PROFILES_STORE.active]){
-  updatePlayerChip();
-  applyAccessibilityModes();
-  renderHome();
-  bumpStreak();
-}else{
-  renderProfilePicker();
+function startLughatiApp(){
+  loadProfilesStore();
+  if(window.speechSynthesis)loadVoices();
+  if(PROFILES_STORE.active&&PROFILES_STORE.profiles[PROFILES_STORE.active]){
+    updatePlayerChip();
+    applyAccessibilityModes();
+    renderHome();
+    bumpStreak();
+  }else{
+    renderProfilePicker();
+  }
 }
+if(window.lghStartBoot)lghStartBoot();
 </script>
 </body>
 </html>
