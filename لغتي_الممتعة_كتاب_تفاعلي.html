@@ -923,6 +923,58 @@ const ENGLISH_LETTERS=[
  {l:"V",word:"Van",emoji:"🚐"},{l:"W",word:"Watermelon",emoji:"🍉"},{l:"X",word:"Box",emoji:"📦"},
  {l:"Y",word:"Yo-yo",emoji:"🪀"},{l:"Z",word:"Zebra",emoji:"🦓"}
 ];
+const FAMOUS_SENTENCES=[
+ {en:"Good morning.",ar:"صباح الخير."},
+ {en:"How are you?",ar:"كيف حالك؟"},
+ {en:"I'm fine, thank you.",ar:"أنا بخير، شكراً."},
+ {en:"What's your name?",ar:"ما اسمك؟"},
+ {en:"My name is Ali.",ar:"اسمي علي."},
+ {en:"Nice to meet you.",ar:"سعدت بلقائك."},
+ {en:"Where are you from?",ar:"من أين أنت؟"},
+ {en:"I'm from Saudi Arabia.",ar:"أنا من السعودية."},
+ {en:"See you later.",ar:"أراك لاحقاً."},
+ {en:"Have a nice day.",ar:"أتمنى لك يوماً سعيداً."},
+ {en:"Thank you very much.",ar:"شكراً جزيلاً."},
+ {en:"You're welcome.",ar:"على الرحب والسعة."},
+ {en:"I'm sorry.",ar:"أنا آسف."},
+ {en:"Excuse me.",ar:"لو سمحت."},
+ {en:"No problem.",ar:"لا مشكلة."},
+ {en:"Can you help me?",ar:"هل يمكنك مساعدتي؟"},
+ {en:"I don't understand.",ar:"لا أفهم."},
+ {en:"Please speak slowly.",ar:"من فضلك تحدث ببطء."},
+ {en:"What does this mean?",ar:"ماذا يعني هذا؟"},
+ {en:"Say it again, please.",ar:"قلها مرة أخرى من فضلك."},
+ {en:"What time is it?",ar:"كم الساعة؟"},
+ {en:"It's ten o'clock.",ar:"الساعة العاشرة."},
+ {en:"I'm hungry.",ar:"أنا جائع."},
+ {en:"I'm thirsty.",ar:"أنا عطشان."},
+ {en:"I'm very tired.",ar:"أنا متعب جداً."},
+ {en:"Let's go.",ar:"هيا بنا."},
+ {en:"Wait a minute.",ar:"انتظر دقيقة."},
+ {en:"I need help.",ar:"أحتاج مساعدة."},
+ {en:"How much is this?",ar:"كم سعر هذا؟"},
+ {en:"It's too expensive.",ar:"إنه غالٍ جداً."},
+ {en:"I want this one.",ar:"أريد هذا."},
+ {en:"Where is the bathroom?",ar:"أين دورة المياه؟"},
+ {en:"Where is the station?",ar:"أين المحطة؟"},
+ {en:"Turn right, please.",ar:"انعطف يميناً من فضلك."},
+ {en:"Go straight ahead.",ar:"امشِ إلى الأمام مباشرة."},
+ {en:"I think I'm lost.",ar:"أعتقد أنني تائه."},
+ {en:"Call the police.",ar:"اتصل بالشرطة."},
+ {en:"I don't feel well.",ar:"لا أشعر أنني بخير."},
+ {en:"I need a doctor.",ar:"أحتاج طبيباً."},
+ {en:"The check, please.",ar:"الحساب من فضلك."},
+ {en:"I'd like some water.",ar:"أريد بعض الماء."},
+ {en:"This is delicious.",ar:"هذا لذيذ."},
+ {en:"What do you do?",ar:"ماذا تعمل؟"},
+ {en:"I'm a student.",ar:"أنا طالب."},
+ {en:"I'm busy right now.",ar:"أنا مشغول الآن."},
+ {en:"Call me later.",ar:"اتصل بي لاحقاً."},
+ {en:"I don't know.",ar:"لا أعرف."},
+ {en:"Of course.",ar:"بالطبع."},
+ {en:"Good luck!",ar:"حظاً موفقاً!"},
+ {en:"Good night.",ar:"تصبح على خير."}
+];
 const MATCH_POOLS=[COLORS,ANIMALS_V,FRUITS,TRANSPORT,BODY,WEATHER,SCHOOL_TOOLS,FAMILY,SHAPES];
 const VOCAB_CATS={
  gColors:{title:"الألوان",icon:"🌈",pool:COLORS},
@@ -1177,17 +1229,30 @@ function speakEN(text){
     speechSynthesis.speak(u);
   }catch(e){}
 }
+/* تسمع الجملة الإنجليزية مرتين تلقائياً: مرة بسرعة عادية، ثم مرة ببطء عشان الطفل يستوعبها */
+function speakSentenceSlow(text){
+  if(!window.speechSynthesis) return;
+  try{
+    speechSynthesis.cancel();
+    const u1=new SpeechSynthesisUtterance(text);
+    u1.lang="en-US"; if(enVoice)u1.voice=enVoice; u1.rate=1; u1.pitch=1.05;
+    const u2=new SpeechSynthesisUtterance(text);
+    u2.lang="en-US"; if(enVoice)u2.voice=enVoice; u2.rate=0.55; u2.pitch=1.05;
+    speechSynthesis.speak(u1);
+    speechSynthesis.speak(u2);
+  }catch(e){}
+}
 /* ====================== تجربة النطق (التعرّف على الصوت) ====================== */
-function practiceSpeak(btn,expected){
+function practiceSpeak(btn,expected,lang,resultId){
   const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
-  const out=document.getElementById("speak-result");
+  const out=document.getElementById(resultId||"speak-result");
   if(!Rec){
     if(out)out.textContent="متصفحك ما يدعم التعرّف على الصوت — جرّب كروم على جهاز حقيقي";
     return;
   }
   try{
     const rec=new Rec();
-    rec.lang="ar-SA"; rec.maxAlternatives=3; rec.interimResults=false;
+    rec.lang=lang||"ar-SA"; rec.maxAlternatives=3; rec.interimResults=false;
     if(out)out.textContent="🎤 يسمعك الآن... قل الكلمة";
     if(btn)btn.disabled=true;
     rec.onresult=(e)=>{
@@ -1227,7 +1292,7 @@ function showToast(text){
 /* ====================== حفظ التقدم ====================== */
 /* ====================== الملفات الشخصية (كل طفل له تقدمه الخاص) ====================== */
 const AVATARS=["🐰","🦁","🐻","🦊","🐼","🐸","🦄","🐶","🐱","🦋","🐧","🐢"];
-function defaultP(){return {stars:{},visited:[],traced:[],visitedEN:[],name:"",cert:false,voiceName:"",avatar:"🙂",streak:0,lastPlay:"",best:0,mistakes:{},dyslexiaMode:false,colorblindMode:false};}
+function defaultP(){return {stars:{},visited:[],traced:[],visitedEN:[],visitedSentences:[],name:"",cert:false,voiceName:"",avatar:"🙂",streak:0,lastPlay:"",best:0,mistakes:{},dyslexiaMode:false,colorblindMode:false};}
 function applyAccessibilityModes(){
   document.body.classList.toggle("dyslexia-mode",!!P.dyslexiaMode);
   document.body.classList.toggle("colorblind-mode",!!P.colorblindMode);
@@ -1358,6 +1423,7 @@ function go(name,arg){
     case "gEnFruitsQuiz":startVocabQuiz("gEnFruits");break;
     case "gEnAnimals":renderVocabIntro("gEnAnimals");break;
     case "gEnAnimalsQuiz":startVocabQuiz("gEnAnimals");break;
+    case "gSentences":renderSentences();break;
     case "gSeaLife":renderVocabIntro("gSeaLife");break;
     case "gSeaLifeQuiz":startVocabQuiz("gSeaLife");break;
     case "gBirds":renderVocabIntro("gBirds");break;
@@ -1495,6 +1561,7 @@ const UNITS=[
  {id:"gEnLetterSound",icon:"🔊",title:"English: Listen & Choose",desc:"استمع واختر بالإنجليزي",key:"gEnLetterSound"},
  {id:"gEnFruits",icon:"🍎",title:"English: Fruit Basket",desc:"أسماء الفواكه بالإنجليزي",key:"gEnFruits"},
  {id:"gEnAnimals",icon:"🦁",title:"English: Animals",desc:"أسماء الحيوانات بالإنجليزي",key:"gEnAnimals"},
+ {id:"gSentences",icon:"💬",title:"جمل مشهورة",desc:"استمع للجملة عادي ثم ببطء، وكرّرها بصوتك",key:"gSentences"},
  {id:"gSeaLife",icon:"🐬",title:"ما في البحار",desc:"قرش، حوت، دولفين، أخطبوط وأكثر",key:"gSeaLife"},
  {id:"gBirds",icon:"🦜",title:"الطيور",desc:"دجاجة، ديك، بومة، نسر، ببغاء وأكثر",key:"gBirds"},
  {id:"gFishV",icon:"🐟",title:"الأسماك",desc:"أنواع من الأسماك",key:"gFishV"},
@@ -1721,6 +1788,27 @@ function renderDiff(){
   '<div class="center mt"><button class="btn green" onclick="go(\'gDiffQuiz\')">🎮 ابدأ التدريب</button></div>';
 }
 /* ====================== الحروف الإنجليزية ====================== */
+function markSentenceHeard(i){
+  if(!P.visitedSentences.includes(i)){P.visitedSentences.push(i);saveP();}
+  if(P.visitedSentences.length===FAMOUS_SENTENCES.length)setStars("gSentences",3);
+  else if(P.visitedSentences.length>=30)setStars("gSentences",2);
+  else if(P.visitedSentences.length>=10)setStars("gSentences",1);
+}
+function renderSentences(){
+  let cards="";
+  FAMOUS_SENTENCES.forEach((x,i)=>{
+    cards+='<div class="haraka-card" dir="ltr" style="max-width:520px;margin:0 auto 14px;text-align:center">'+
+      '<div style="font-size:1.3rem;font-weight:800;margin-bottom:6px">'+x.en+'</div>'+
+      '<div dir="rtl" style="color:#5c548c;font-size:1.05rem;margin-bottom:10px">'+x.ar+'</div>'+
+      '<button class="btn small orange" onclick="speakSentenceSlow(\''+x.en.replace(/'/g,"\\'")+'\');markSentenceHeard('+i+')">🔊 استمع (عادي ثم ببطء)</button> '+
+      '<button class="btn small pink" onclick="practiceSpeak(this,\''+x.en.replace(/'/g,"\\'")+'\',\'en-US\',\'sr-'+i+'\')">🎤 كرر بصوتك</button>'+
+      '<div class="q-explain" id="sr-'+i+'" style="min-height:1.4em"></div>'+
+    '</div>';
+  });
+  app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>💬 جمل مشهورة</h2></div>'+
+  '<p class="center" style="color:#5c548c">استمع للجملة مرة عادية ثم مرة ببطء، وبعدها اضغط 🎤 وكررها بصوتك</p>'+
+  cards;
+}
 function renderEnglishLetters(){
   let tiles="";
   ENGLISH_LETTERS.forEach((x,i)=>{
