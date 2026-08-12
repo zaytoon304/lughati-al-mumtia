@@ -973,7 +973,25 @@ const FAMOUS_SENTENCES=[
  {en:"I don't know.",ar:"لا أعرف."},
  {en:"Of course.",ar:"بالطبع."},
  {en:"Good luck!",ar:"حظاً موفقاً!"},
- {en:"Good night.",ar:"تصبح على خير."}
+ {en:"Good night.",ar:"تصبح على خير."},
+ {en:"Can I see the menu, please?",ar:"هل يمكنني رؤية القائمة من فضلك؟"},
+ {en:"I'd like a cup of coffee.",ar:"أريد كوب قهوة."},
+ {en:"What do you recommend?",ar:"بماذا تنصحني؟"},
+ {en:"Is this seat taken?",ar:"هل هذا المقعد محجوز؟"},
+ {en:"Can I get this to go?",ar:"هل يمكنني أخذ هذا معي؟"},
+ {en:"Do you have Wi-Fi?",ar:"هل يوجد لديكم واي فاي؟"},
+ {en:"One more, please.",ar:"واحد إضافي من فضلك."},
+ {en:"Enjoy your meal!",ar:"بالهناء والشفاء!"},
+ {en:"May I go to the bathroom?",ar:"هل يمكنني الذهاب إلى الحمام؟"},
+ {en:"Can I ask a question?",ar:"هل يمكنني طرح سؤال؟"},
+ {en:"I finished my homework.",ar:"أنهيت واجبي."},
+ {en:"Open your books, please.",ar:"افتحوا كتبكم من فضلكم."},
+ {en:"Raise your hand.",ar:"ارفع يدك."},
+ {en:"It's my turn.",ar:"هذا دوري."},
+ {en:"Can I borrow a pencil?",ar:"هل يمكنني استعارة قلم رصاص؟"},
+ {en:"Sit down, please.",ar:"اجلس من فضلك."},
+ {en:"Listen carefully.",ar:"استمع جيداً."},
+ {en:"Well done!",ar:"أحسنت!"}
 ];
 const MATCH_POOLS=[COLORS,ANIMALS_V,FRUITS,TRANSPORT,BODY,WEATHER,SCHOOL_TOOLS,FAMILY,SHAPES];
 const VOCAB_CATS={
@@ -1234,12 +1252,11 @@ function speakSentenceSlow(text){
   if(!window.speechSynthesis) return;
   try{
     speechSynthesis.cancel();
-    const u1=new SpeechSynthesisUtterance(text);
-    u1.lang="en-US"; if(enVoice)u1.voice=enVoice; u1.rate=1; u1.pitch=1.05;
-    const u2=new SpeechSynthesisUtterance(text);
-    u2.lang="en-US"; if(enVoice)u2.voice=enVoice; u2.rate=0.55; u2.pitch=1.05;
-    speechSynthesis.speak(u1);
-    speechSynthesis.speak(u2);
+    [1,0.7,0.35].forEach(rate=>{
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang="en-US"; if(enVoice)u.voice=enVoice; u.rate=rate; u.pitch=1.05;
+      speechSynthesis.speak(u);
+    });
   }catch(e){}
 }
 /* ====================== تجربة النطق (التعرّف على الصوت) ====================== */
@@ -1561,7 +1578,7 @@ const UNITS=[
  {id:"gEnLetterSound",icon:"🔊",title:"English: Listen & Choose",desc:"استمع واختر بالإنجليزي",key:"gEnLetterSound"},
  {id:"gEnFruits",icon:"🍎",title:"English: Fruit Basket",desc:"أسماء الفواكه بالإنجليزي",key:"gEnFruits"},
  {id:"gEnAnimals",icon:"🦁",title:"English: Animals",desc:"أسماء الحيوانات بالإنجليزي",key:"gEnAnimals"},
- {id:"gSentences",icon:"💬",title:"جمل مشهورة",desc:"استمع للجملة عادي ثم ببطء، وكرّرها بصوتك",key:"gSentences"},
+ {id:"gSentences",icon:"💬",title:"جمل مشهورة",desc:"استمع للجملة 3 مرات (عادي، أبطأ، بطيء جداً)، وكرّرها بصوتك",key:"gSentences"},
  {id:"gSeaLife",icon:"🐬",title:"ما في البحار",desc:"قرش، حوت، دولفين، أخطبوط وأكثر",key:"gSeaLife"},
  {id:"gBirds",icon:"🦜",title:"الطيور",desc:"دجاجة، ديك، بومة، نسر، ببغاء وأكثر",key:"gBirds"},
  {id:"gFishV",icon:"🐟",title:"الأسماك",desc:"أنواع من الأسماك",key:"gFishV"},
@@ -1800,13 +1817,13 @@ function renderSentences(){
     cards+='<div class="haraka-card" dir="ltr" style="max-width:520px;margin:0 auto 14px;text-align:center">'+
       '<div style="font-size:1.3rem;font-weight:800;margin-bottom:6px">'+x.en+'</div>'+
       '<div dir="rtl" style="color:#5c548c;font-size:1.05rem;margin-bottom:10px">'+x.ar+'</div>'+
-      '<button class="btn small orange" onclick="speakSentenceSlow(\''+x.en.replace(/'/g,"\\'")+'\');markSentenceHeard('+i+')">🔊 استمع (عادي ثم ببطء)</button> '+
+      '<button class="btn small orange" onclick="speakSentenceSlow(\''+x.en.replace(/'/g,"\\'")+'\');markSentenceHeard('+i+')">🔊 استمع (3 مرات)</button> '+
       '<button class="btn small pink" onclick="practiceSpeak(this,\''+x.en.replace(/'/g,"\\'")+'\',\'en-US\',\'sr-'+i+'\')">🎤 كرر بصوتك</button>'+
       '<div class="q-explain" id="sr-'+i+'" style="min-height:1.4em"></div>'+
     '</div>';
   });
   app.innerHTML='<div class="screen-title">'+backBtn()+'<h2>💬 جمل مشهورة</h2></div>'+
-  '<p class="center" style="color:#5c548c">استمع للجملة مرة عادية ثم مرة ببطء، وبعدها اضغط 🎤 وكررها بصوتك</p>'+
+  '<p class="center" style="color:#5c548c">استمع للجملة 3 مرات (عادي، ثم أبطأ، ثم بطيء جداً)، وبعدها اضغط 🎤 وكررها بصوتك</p>'+
   cards;
 }
 function renderEnglishLetters(){
