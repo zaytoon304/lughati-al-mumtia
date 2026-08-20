@@ -995,22 +995,22 @@ const FAMOUS_SENTENCES=[
 ];
 const MATCH_POOLS=[COLORS,ANIMALS_V,FRUITS,TRANSPORT,BODY,WEATHER,SCHOOL_TOOLS,FAMILY,SHAPES];
 const VOCAB_CATS={
- gColors:{title:"الألوان",icon:"🌈",pool:COLORS},
+ gColors:{title:"الألوان",icon:"🌈",pool:COLORS,audioPrefix:"vocab_gColors"},
  gAnimalsV:{title:"الحيوانات",icon:"🦁",pool:ANIMALS_V,audioPrefix:"animal_name"},
- gShapes:{title:"الأشكال",icon:"🔺",pool:SHAPES},
- gFruits:{title:"الفواكه",icon:"🍎",pool:FRUITS},
- gTransport:{title:"المواصلات",icon:"🚗",pool:TRANSPORT},
- gNumbersV:{title:"الأرقام",icon:"🔟",pool:NUMBERS_V},
- gBody:{title:"أجزاء الجسم",icon:"🖐️",pool:BODY},
- gWeather:{title:"الطقس",icon:"⛅",pool:WEATHER},
- gSchoolTools:{title:"الأدوات المدرسية",icon:"🎒",pool:SCHOOL_TOOLS},
- gFamily:{title:"أفراد الأسرة",icon:"👨‍👩‍👧‍👦",pool:FAMILY},
- gEnFruits:{title:"English: Fruit Basket",icon:"🍎",pool:EN_FRUITS,lang:"en"},
- gEnAnimals:{title:"English: Animals",icon:"🦁",pool:EN_ANIMALS,lang:"en"},
- gSeaLife:{title:"ما في البحار",icon:"🐬",pool:SEA_LIFE},
- gBirds:{title:"الطيور",icon:"🦜",pool:BIRDS},
- gFishV:{title:"الأسماك",icon:"🐟",pool:FISH_V},
- gBugsReptiles:{title:"الحشرات والزواحف",icon:"🐝",pool:BUGS_REPTILES}
+ gShapes:{title:"الأشكال",icon:"🔺",pool:SHAPES,audioPrefix:"vocab_gShapes"},
+ gFruits:{title:"الفواكه",icon:"🍎",pool:FRUITS,audioPrefix:"vocab_gFruits"},
+ gTransport:{title:"المواصلات",icon:"🚗",pool:TRANSPORT,audioPrefix:"vocab_gTransport"},
+ gNumbersV:{title:"الأرقام",icon:"🔟",pool:NUMBERS_V,audioPrefix:"vocab_gNumbersV"},
+ gBody:{title:"أجزاء الجسم",icon:"🖐️",pool:BODY,audioPrefix:"vocab_gBody"},
+ gWeather:{title:"الطقس",icon:"⛅",pool:WEATHER,audioPrefix:"vocab_gWeather"},
+ gSchoolTools:{title:"الأدوات المدرسية",icon:"🎒",pool:SCHOOL_TOOLS,audioPrefix:"vocab_gSchoolTools"},
+ gFamily:{title:"أفراد الأسرة",icon:"👨‍👩‍👧‍👦",pool:FAMILY,audioPrefix:"vocab_gFamily"},
+ gEnFruits:{title:"English: Fruit Basket",icon:"🍎",pool:EN_FRUITS,lang:"en",audioPrefix:"vocab_gEnFruits"},
+ gEnAnimals:{title:"English: Animals",icon:"🦁",pool:EN_ANIMALS,lang:"en",audioPrefix:"vocab_gEnAnimals"},
+ gSeaLife:{title:"ما في البحار",icon:"🐬",pool:SEA_LIFE,audioPrefix:"vocab_gSeaLife"},
+ gBirds:{title:"الطيور",icon:"🦜",pool:BIRDS,audioPrefix:"vocab_gBirds"},
+ gFishV:{title:"الأسماك",icon:"🐟",pool:FISH_V,audioPrefix:"vocab_gFishV"},
+ gBugsReptiles:{title:"الحشرات والزواحف",icon:"🐝",pool:BUGS_REPTILES,audioPrefix:"vocab_gBugsReptiles"}
 };
 /* ====================== مهارات تفكير إضافية ====================== */
 const CLASSIFY_PAIRS=[
@@ -1258,6 +1258,20 @@ function speakSentenceSlow(text){
       speechSynthesis.speak(u);
     });
   }catch(e){}
+}
+/* لو فيه تسجيل حقيقي بصوت طفل (audio/sentence_N.mp3) يشغّله 3 مرات بسرعات متدرجة
+   (نفس الملف، بس أبطأ كل مرة عبر playbackRate) — وإلا يرجع للقارئ الآلي 3 مرات */
+function playSentenceThrice(key,text){
+  const rates=[1,0.7,0.35];
+  let step=0,failed=false;
+  const audio=new Audio("audio/"+key+".mp3");
+  audio.onerror=()=>{ if(!failed){failed=true; speakSentenceSlow(text);} };
+  audio.onended=()=>{
+    step++;
+    if(step<rates.length){ audio.currentTime=0; audio.playbackRate=rates[step]; audio.play().catch(()=>{}); }
+  };
+  audio.playbackRate=rates[0];
+  audio.play().catch(()=>{ if(!failed){failed=true; speakSentenceSlow(text);} });
 }
 /* ====================== تجربة النطق (التعرّف على الصوت) ====================== */
 function practiceSpeak(btn,expected,lang,resultId){
@@ -1817,7 +1831,7 @@ function renderSentences(){
     cards+='<div class="haraka-card" dir="ltr" style="max-width:520px;margin:0 auto 14px;text-align:center">'+
       '<div style="font-size:1.3rem;font-weight:800;margin-bottom:6px">'+x.en+'</div>'+
       '<div dir="rtl" style="color:#5c548c;font-size:1.05rem;margin-bottom:10px">'+x.ar+'</div>'+
-      '<button class="btn small orange" onclick="speakSentenceSlow(\''+x.en.replace(/'/g,"\\'")+'\');markSentenceHeard('+i+')">🔊 استمع (3 مرات)</button> '+
+      '<button class="btn small orange" onclick="playSentenceThrice(\'sentence_'+i+'\',\''+x.en.replace(/'/g,"\\'")+'\');markSentenceHeard('+i+')">🔊 استمع (3 مرات)</button> '+
       '<button class="btn small pink" onclick="practiceSpeak(this,\''+x.en.replace(/'/g,"\\'")+'\',\'en-US\',\'sr-'+i+'\')">🎤 كرر بصوتك</button>'+
       '<div class="q-explain" id="sr-'+i+'" style="min-height:1.4em"></div>'+
     '</div>';
@@ -2137,7 +2151,7 @@ function qNumberSquareOne(){
   const opts=shuffle(nums).map(m=>({
     label:'<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:88px">'+"🔵".repeat(m)+'</div>',
     correct:m===n}));
-  return {prompt:"استمع للعدد، ثم اضغط على المربع اللي فيه نفس عدد الدوائر",options:opts,speak:NUM_WORDS[n]};
+  return {prompt:"استمع للعدد، ثم اضغط على المربع اللي فيه نفس عدد الدوائر",options:opts,speak:NUM_WORDS[n],playKey:"vocab_gNumbersV_"+(n-1)};
 }
 function startNumbersVQuiz(){
   const qs=[];for(let i=0;i<20;i++)qs.push(qNumberSquareOne());
