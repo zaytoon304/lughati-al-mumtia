@@ -3105,21 +3105,37 @@ function confetti(){
 /* ====================== وضع العرض الجماعي (للعرض أمام الفصل على شاشة/بروجكتر) ====================== */
 const ASM_TEAMS=[
  {emoji:"🔵",name:"الأزرق"},{emoji:"🔴",name:"الأحمر"},
- {emoji:"🟢",name:"الأخضر"},{emoji:"🟡",name:"الأصفر"}
+ {emoji:"🟢",name:"الأخضر"},{emoji:"🟡",name:"الأصفر"},{emoji:"🟣",name:"البنفسجي"}
 ];
+const SHAPES_3D=[
+ {name:"مخروط",speakWord:"مَخْرُوط",emoji:"🚧"},
+ {name:"أسطوانة",speakWord:"أُسْطُوانَة",emoji:"🥫"},
+ {name:"هرم",speakWord:"هَرَم",emoji:"🗻"},
+ {name:"منشور",speakWord:"مِنْشُور",emoji:"⛺"}
+];
+function asmShuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function asmQuestionPool(){
+  const pool=[];
+  ANIMAL_SOUNDS.forEach((a,i)=>pool.push({type:"animal",i:i,a:a}));
+  LETTERS.forEach((x,i)=>pool.push({type:"letter",i:i,x:x}));
+  SHAPES.forEach((s,i)=>pool.push({type:"shape2d",i:i,s:s}));
+  SHAPES_3D.forEach((s,i)=>pool.push({type:"shape3d",i:i,s:s}));
+  COLORS.forEach((c,i)=>pool.push({type:"color",i:i,c:c}));
+  NUMBERS_V.forEach((n,i)=>pool.push({type:"number",i:i,n:n}));
+  return pool;
+}
 function buildAssemblySteps(){
-  const steps=[{type:"welcome"},{type:"teamSetup"}];
-  ANIMAL_SOUNDS.forEach((a,i)=>steps.push({type:"animal",i:i,a:a}));
-  LETTERS.forEach((x,i)=>steps.push({type:"letter",i:i,x:x}));
-  steps.push({type:"activity"});
-  steps.push({type:"outro"});
-  return steps;
+  return [{type:"welcome"},{type:"teamSetup"},{type:"quizSetup"}];
 }
 function startAssembly(){
   const h=document.querySelector("header"), f=document.querySelector("footer");
   if(h)h.style.display="none";
   if(f)f.style.display="none";
-  window._asm={steps:buildAssemblySteps(),idx:0,revealed:false,teamCount:2,scores:[0,0]};
+  window._asm={steps:buildAssemblySteps(),idx:0,revealed:false,teamCount:2,scores:[0,0],qChoice:10};
   document.addEventListener("keydown",asmKeyHandler);
   renderAssembly();
 }
@@ -3127,6 +3143,18 @@ function asmSetTeams(n){
   const st=window._asm; if(!st)return;
   st.teamCount=n; st.scores=new Array(n).fill(0);
   renderAssembly();
+}
+function asmSetQCount(n){
+  const st=window._asm; if(!st)return;
+  st.qChoice=n;
+  renderAssembly();
+}
+function asmStartQuiz(){
+  const st=window._asm; if(!st)return;
+  const n=st.qChoice||10;
+  const questions=asmShuffle(asmQuestionPool()).slice(0,n);
+  st.steps=st.steps.slice(0,st.idx+1).concat(questions).concat([{type:"activity"},{type:"outro"}]);
+  asmNext();
 }
 function asmAward(teamIdx){
   const st=window._asm; if(!st||teamIdx>=st.teamCount)return;
@@ -3166,16 +3194,18 @@ function asmKeyHandler(e){
   if(e.key==="ArrowRight"){e.preventDefault();asmNext();return;}
   if(e.key==="ArrowLeft"){e.preventDefault();asmPrev();return;}
   if(e.key===" "||e.key==="Enter"){e.preventDefault();asmPrimary();return;}
-  if(["1","2","3","4"].includes(e.key)){
+  if(["1","2","3","4","5"].includes(e.key)){
     const st=window._asm, step=st.steps[st.idx], n=+e.key-1;
-    if((step.type==="animal"||step.type==="letter")&&st.revealed&&n<st.teamCount){asmAward(n);}
+    if(ASM_QUESTION_TYPES.includes(step.type)&&st.revealed&&n<st.teamCount){asmAward(n);}
     return;
   }
 }
+const ASM_QUESTION_TYPES=["animal","letter","shape2d","shape3d","color","number"];
 function asmPrimary(){
   const st=window._asm; if(!st)return;
   const step=st.steps[st.idx];
-  if((step.type==="animal"||step.type==="letter")&&!st.revealed)asmReveal();
+  if(ASM_QUESTION_TYPES.includes(step.type)&&!st.revealed)asmReveal();
+  else if(step.type==="quizSetup")asmStartQuiz();
   else asmNext();
 }
 function asmNext(){
@@ -3197,6 +3227,14 @@ function asmReveal(){
     if(idx>=0)playOrSpeak("animal_name_"+idx,step.a.name); else speak(step.a.name);
   }else if(step.type==="letter"){
     playOrSpeak("letter_"+step.i,step.x.name+". "+step.x.word);
+  }else if(step.type==="shape2d"){
+    playOrSpeak("vocab_gShapes_"+step.i,step.s.name);
+  }else if(step.type==="shape3d"){
+    speak(step.s.speakWord);
+  }else if(step.type==="color"){
+    playOrSpeak("vocab_gColors_"+step.i,step.c.name);
+  }else if(step.type==="number"){
+    playOrSpeak("vocab_gNumbersV_"+step.i,step.n.name);
   }
 }
 function asmStepHtml(){
@@ -3205,7 +3243,7 @@ function asmStepHtml(){
   const exitBtn='<button onclick="asmExit()" style="position:absolute;top:8px;right:14px;background:none;border:none;color:#fff;font-size:1.8rem;cursor:pointer;opacity:.7">✕</button>';
   const prevBtn=st.idx>0?'<button onclick="asmPrev()" style="position:absolute;bottom:46px;right:20px;background:none;border:2px solid rgba(255,255,255,.3);color:#fff;border-radius:12px;padding:8px 16px;font-size:1rem;cursor:pointer">◀ رجوع</button>':"";
   let body="";
-  const scoreboard=(step.type==="welcome"||step.type==="teamSetup")?"":asmScoreboardHtml();
+  const scoreboard=(step.type==="welcome"||step.type==="teamSetup"||step.type==="quizSetup")?"":asmScoreboardHtml();
   if(step.type==="welcome"){
     body='<div style="font-size:7rem">⭐</div>'+
     '<h1 style="font-size:3rem;color:#fff;margin:10px 0">أهلاً يا أبطال! 🎉</h1>'+
@@ -3213,16 +3251,27 @@ function asmStepHtml(){
     '<button class="btn green" style="font-size:1.8rem;padding:18px 46px;margin-top:24px" onclick="asmNext()">🚀 يلا نبدأ</button>';
   }else if(step.type==="teamSetup"){
     let teamBtns="";
-    for(let n=2;n<=4;n++){
+    for(let n=2;n<=5;n++){
       const sel=st.teamCount===n?"outline:3px solid #ffd54f;":"";
       teamBtns+='<button onclick="asmSetTeams('+n+')" style="font-size:1.3rem;padding:12px 26px;margin:6px;border:none;border-radius:14px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;'+sel+'">'+toArNum(n)+' فرق</button>';
     }
     let badges="";
     for(let i=0;i<st.teamCount;i++)badges+='<span style="font-size:2.2rem;margin:0 8px">'+ASM_TEAMS[i].emoji+'</span>';
-    body='<h2 style="font-size:2.2rem;color:#fff">🏁 كم فريق عندنا اليوم؟</h2>'+
+    body='<h2 style="font-size:2.2rem;color:#fff">🎈 كم فريق عندنا اليوم؟</h2>'+
+    '<p style="font-size:1.1rem;color:#ffe9a8;opacity:.85">وزّع بالونات بنفس ألوان الفرق على الطلاب</p>'+
     '<div style="margin:14px 0">'+teamBtns+'</div>'+
     '<div style="margin:10px 0 20px">'+badges+'</div>'+
-    '<button class="btn green" style="font-size:1.6rem;padding:16px 40px" onclick="asmNext()">▶ ابدأ المسابقة</button>';
+    '<button class="btn green" style="font-size:1.6rem;padding:16px 40px" onclick="asmNext()">▶ التالي</button>';
+  }else if(step.type==="quizSetup"){
+    let qBtns="";
+    [5,7,10].forEach(n=>{
+      const sel=st.qChoice===n?"outline:3px solid #ffd54f;":"";
+      qBtns+='<button onclick="asmSetQCount('+n+')" style="font-size:1.3rem;padding:12px 26px;margin:6px;border:none;border-radius:14px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;'+sel+'">'+toArNum(n)+' أسئلة</button>';
+    });
+    body='<h2 style="font-size:2.2rem;color:#fff">❓ كم سؤال بالمسابقة؟</h2>'+
+    '<p style="font-size:1.1rem;color:#ffe9a8;opacity:.85">مزيج عشوائي من الحيوانات والحروف والأشكال والألوان والأرقام</p>'+
+    '<div style="margin:14px 0">'+qBtns+'</div>'+
+    '<button class="btn green" style="font-size:1.6rem;padding:16px 40px" onclick="asmStartQuiz()">🚀 ابدأ المسابقة</button>';
   }else if(step.type==="animal"){
     const a=step.a;
     if(!st.revealed){
@@ -3250,6 +3299,42 @@ function asmStepHtml(){
       asmAwardButtonsHtml()+
       '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:10px" onclick="asmNext()">➡️ التالي</button>';
     }
+  }else if(step.type==="shape2d"||step.type==="shape3d"){
+    const s=step.s;
+    if(!st.revealed){
+      body='<h2 style="font-size:2.2rem;color:#fff">🔺 شنو اسم هذا الشكل؟</h2>'+
+      '<div style="font-size:6rem;margin:16px 0">'+s.emoji+'</div>'+
+      '<button class="btn green" style="font-size:1.3rem;padding:14px 28px" onclick="asmReveal()">✅ اكشف الاسم</button>';
+    }else{
+      body='<div style="font-size:6rem">'+s.emoji+'</div>'+
+      '<h1 style="font-size:3rem;color:#fff">'+s.name+'</h1>'+
+      asmAwardButtonsHtml()+
+      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:10px" onclick="asmNext()">➡️ التالي</button>';
+    }
+  }else if(step.type==="color"){
+    const c=step.c;
+    if(!st.revealed){
+      body='<h2 style="font-size:2.2rem;color:#fff">🎨 شنو اسم هذا اللون؟</h2>'+
+      '<div style="font-size:8rem;margin:16px 0">'+c.emoji+'</div>'+
+      '<button class="btn green" style="font-size:1.3rem;padding:14px 28px" onclick="asmReveal()">✅ اكشف الاسم</button>';
+    }else{
+      body='<div style="font-size:8rem">'+c.emoji+'</div>'+
+      '<h1 style="font-size:3.4rem;color:#fff">'+c.name+'</h1>'+
+      asmAwardButtonsHtml()+
+      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:10px" onclick="asmNext()">➡️ التالي</button>';
+    }
+  }else if(step.type==="number"){
+    const n=step.n;
+    if(!st.revealed){
+      body='<h2 style="font-size:2.2rem;color:#fff">🔢 شنو هذا العدد؟</h2>'+
+      '<div style="font-size:8rem;margin:16px 0">'+n.emoji+'</div>'+
+      '<button class="btn green" style="font-size:1.3rem;padding:14px 28px" onclick="asmReveal()">✅ اكشف الاسم</button>';
+    }else{
+      body='<div style="font-size:8rem">'+n.emoji+'</div>'+
+      '<h1 style="font-size:3.4rem;color:#fff">'+n.name+'</h1>'+
+      asmAwardButtonsHtml()+
+      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:10px" onclick="asmNext()">➡️ التالي</button>';
+    }
   }else if(step.type==="activity"){
     body='<div style="font-size:7rem">🤸</div>'+
     '<h1 style="font-size:2.6rem;color:#fff">وقت الحركة! 🎵</h1>'+
@@ -3270,7 +3355,7 @@ function asmStepHtml(){
     '<p style="font-size:1.4rem;color:#ffe9a8">جربوا كتاب "لغتي الممتعة" بنفسكم قريبًا!</p>'+
     '<button class="btn blue" style="font-size:1.6rem;padding:16px 40px;margin-top:20px" onclick="asmExit()">🏠 إنهاء العرض</button>';
   }
-  const hint='<div style="position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#cbd5e1;font-size:.85rem;opacity:.6">فراغ = التالي &nbsp;|&nbsp; ◀ رجوع &nbsp;|&nbsp; ١-٤ نقطة لفريق &nbsp;|&nbsp; Esc خروج</div>';
+  const hint='<div style="position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#cbd5e1;font-size:.85rem;opacity:.6">فراغ = التالي &nbsp;|&nbsp; ◀ رجوع &nbsp;|&nbsp; ١-٥ نقطة لفريق &nbsp;|&nbsp; Esc خروج</div>';
   return '<div style="position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#1a1140,#3b1f6b);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px">'+
    progress+scoreboard+exitBtn+prevBtn+'<div>'+body+'</div>'+hint+'</div>';
 }
