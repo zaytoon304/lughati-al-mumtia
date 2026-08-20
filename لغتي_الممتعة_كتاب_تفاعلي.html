@@ -1398,6 +1398,7 @@ function go(name,arg){
   app.classList.remove("fade-in"); void app.offsetWidth; app.classList.add("fade-in");
   switch(name){
     case "home":renderHome();break;
+    case "gAssembly":startAssembly();break;
     case "letters":renderLetters();break;
     case "lettersWorksheet":renderLettersWorksheet();break;
     case "letterDetail":renderLetterDetail(arg);break;
@@ -1556,6 +1557,7 @@ function confirmNewProfile(){
 function pickProfile(nm){setActiveProfile(nm);go("home");}
 /* ====================== الشاشة الرئيسية ====================== */
 const UNITS=[
+ {id:"gAssembly",icon:"🎉",title:"وضع العرض الجماعي",desc:"شاشة كبيرة للعرض أمام الفصل — تتحكم بالكيبورد (فراغ=التالي)",key:null},
  {id:"letters",icon:"📖",title:"الحروف الهجائية",desc:"تعلّم الحروف بالصوت والصورة",key:"letters"},
  {id:"harakat",icon:"✨",title:"الحركات القصيرة",desc:"الفتحة والضمة والكسرة والسكون",key:"harakat"},
  {id:"gMadd",icon:"🌊",title:"المدود",desc:"مد الألف والواو والياء لحالها",key:"gMadd"},
@@ -3098,6 +3100,125 @@ function confetti(){
     s.style.fontSize=(1+Math.random()*1.2)+"rem";
     document.body.appendChild(s);
     setTimeout(()=>s.remove(),3600);
+  }
+}
+/* ====================== وضع العرض الجماعي (للعرض أمام الفصل على شاشة/بروجكتر) ====================== */
+function buildAssemblySteps(){
+  const steps=[{type:"welcome"}];
+  ANIMAL_SOUNDS.forEach((a,i)=>steps.push({type:"animal",i:i,a:a}));
+  LETTERS.forEach((x,i)=>steps.push({type:"letter",i:i,x:x}));
+  steps.push({type:"activity"});
+  steps.push({type:"outro"});
+  return steps;
+}
+function startAssembly(){
+  const h=document.querySelector("header"), f=document.querySelector("footer");
+  if(h)h.style.display="none";
+  if(f)f.style.display="none";
+  window._asm={steps:buildAssemblySteps(),idx:0,revealed:false};
+  document.addEventListener("keydown",asmKeyHandler);
+  renderAssembly();
+}
+function asmExit(){
+  const h=document.querySelector("header"), f=document.querySelector("footer");
+  if(h)h.style.display="";
+  if(f)f.style.display="";
+  document.removeEventListener("keydown",asmKeyHandler);
+  window._asm=null;
+  go("home");
+}
+function asmKeyHandler(e){
+  if(!window._asm)return;
+  if(e.key==="Escape"){asmExit();return;}
+  if(e.key==="ArrowRight"){e.preventDefault();asmNext();return;}
+  if(e.key==="ArrowLeft"){e.preventDefault();asmPrev();return;}
+  if(e.key===" "||e.key==="Enter"){e.preventDefault();asmPrimary();return;}
+}
+function asmPrimary(){
+  const st=window._asm; if(!st)return;
+  const step=st.steps[st.idx];
+  if((step.type==="animal"||step.type==="letter")&&!st.revealed)asmReveal();
+  else asmNext();
+}
+function asmNext(){
+  const st=window._asm; if(!st)return;
+  if(st.idx<st.steps.length-1){st.idx++;st.revealed=false;renderAssembly();}
+}
+function asmPrev(){
+  const st=window._asm; if(!st)return;
+  if(st.idx>0){st.idx--;st.revealed=false;renderAssembly();}
+}
+function asmReveal(){
+  const st=window._asm; if(!st)return;
+  st.revealed=true;
+  renderAssembly();
+  confetti();
+  const step=st.steps[st.idx];
+  if(step.type==="animal"){
+    const idx=ANIMALS_V.findIndex(a=>a.name===step.a.name);
+    if(idx>=0)playOrSpeak("animal_name_"+idx,step.a.name); else speak(step.a.name);
+  }else if(step.type==="letter"){
+    playOrSpeak("letter_"+step.i,step.x.name+". "+step.x.word);
+  }
+}
+function asmStepHtml(){
+  const st=window._asm, step=st.steps[st.idx], total=st.steps.length, pos=st.idx+1;
+  const progress='<div style="position:absolute;top:14px;left:14px;color:#ffd54f;font-size:.9rem;opacity:.75">'+toArNum(pos)+' / '+toArNum(total)+'</div>';
+  const exitBtn='<button onclick="asmExit()" style="position:absolute;top:8px;right:14px;background:none;border:none;color:#fff;font-size:1.8rem;cursor:pointer;opacity:.7">✕</button>';
+  const prevBtn=st.idx>0?'<button onclick="asmPrev()" style="position:absolute;bottom:46px;right:20px;background:none;border:2px solid rgba(255,255,255,.3);color:#fff;border-radius:12px;padding:8px 16px;font-size:1rem;cursor:pointer">◀ رجوع</button>':"";
+  let body="";
+  if(step.type==="welcome"){
+    body='<div style="font-size:7rem">⭐</div>'+
+    '<h1 style="font-size:3rem;color:#fff;margin:10px 0">أهلاً يا أبطال! 🎉</h1>'+
+    '<p style="font-size:1.6rem;color:#ffe9a8">أنا نجّوم! جاهزين نلعب ونتعلم سوا؟</p>'+
+    '<button class="btn green" style="font-size:1.8rem;padding:18px 46px;margin-top:24px" onclick="asmNext()">🚀 يلا نبدأ</button>';
+  }else if(step.type==="animal"){
+    const a=step.a;
+    if(!st.revealed){
+      body='<h2 style="font-size:2.2rem;color:#fff">🔊 من صاحب هذا الصوت؟</h2>'+
+      '<div style="font-size:9rem;margin:16px 0">❓</div>'+
+      '<button class="btn orange" style="font-size:1.3rem;padding:14px 28px" onclick="playOrSpeak(\'sound_'+step.i+'\',\''+a.sound+'\')">🔁 أعد الصوت</button> '+
+      '<button class="btn green" style="font-size:1.3rem;padding:14px 28px" onclick="asmReveal()">✅ اكشف الجواب</button>';
+    }else{
+      body='<div style="font-size:9rem">'+a.emoji+'</div>'+
+      '<h1 style="font-size:3.4rem;color:#fff">'+a.name+'</h1>'+
+      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:18px" onclick="asmNext()">➡️ التالي</button>';
+    }
+  }else if(step.type==="letter"){
+    const x=step.x;
+    if(!st.revealed){
+      body='<h2 style="font-size:2.2rem;color:#fff">🤔 شنو اسم هذا الحرف؟</h2>'+
+      '<div style="font-size:11rem;color:#ffd54f;font-weight:800">'+x.l+'</div>'+
+      '<button class="btn green" style="font-size:1.3rem;padding:14px 28px" onclick="asmReveal()">✅ اكشف الاسم</button>';
+    }else{
+      body='<div style="font-size:8rem;color:#ffd54f;font-weight:800">'+x.l+'</div>'+
+      '<h1 style="font-size:2.6rem;color:#fff">'+x.name+'</h1>'+
+      '<div style="font-size:4rem">'+x.emoji+'</div>'+
+      '<div style="font-size:1.8rem;color:#ffe9a8">'+x.word+'</div>'+
+      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:18px" onclick="asmNext()">➡️ التالي</button>';
+    }
+  }else if(step.type==="activity"){
+    body='<div style="font-size:7rem">🤸</div>'+
+    '<h1 style="font-size:2.6rem;color:#fff">وقت الحركة! 🎵</h1>'+
+    '<p style="font-size:1.6rem;color:#ffe9a8;max-width:700px;margin:14px auto">قفوا كلكم! اقفزوا ٥ مرات، صفّقوا ٥ مرات، ولفّوا حول أنفسكم مرة وحدة!</p>'+
+    '<button class="btn green" style="font-size:1.6rem;padding:16px 40px;margin-top:20px" onclick="asmNext()">➡️ التالي</button>';
+  }else if(step.type==="outro"){
+    body='<div style="font-size:7rem">🏆</div>'+
+    '<h1 style="font-size:3rem;color:#fff">أحسنتم يا أبطال! 🎉</h1>'+
+    '<p style="font-size:1.6rem;color:#ffe9a8">جربوا كتاب "لغتي الممتعة" بنفسكم قريبًا!</p>'+
+    '<button class="btn blue" style="font-size:1.6rem;padding:16px 40px;margin-top:20px" onclick="asmExit()">🏠 إنهاء العرض</button>';
+  }
+  const hint='<div style="position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#cbd5e1;font-size:.85rem;opacity:.6">فراغ = التالي &nbsp;|&nbsp; ◀ رجوع &nbsp;|&nbsp; Esc خروج</div>';
+  return '<div style="position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#1a1140,#3b1f6b);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px">'+
+   progress+exitBtn+prevBtn+'<div>'+body+'</div>'+hint+'</div>';
+}
+function renderAssembly(){
+  app.innerHTML=asmStepHtml();
+  const st=window._asm, step=st.steps[st.idx];
+  if(step.type==="animal"&&!st.revealed){
+    setTimeout(()=>playOrSpeak("sound_"+step.i,step.a.sound),300);
+  }else if(step.type==="welcome"){
+    setTimeout(()=>speak("أهلاً يا أبطال! أنا نجّوم! جاهزين نلعب ونتعلم سوا؟"),300);
   }
 }
 /* ====================== التشغيل ====================== */
