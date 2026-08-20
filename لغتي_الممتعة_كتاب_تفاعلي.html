@@ -3103,8 +3103,12 @@ function confetti(){
   }
 }
 /* ====================== وضع العرض الجماعي (للعرض أمام الفصل على شاشة/بروجكتر) ====================== */
+const ASM_TEAMS=[
+ {emoji:"🔵",name:"الأزرق"},{emoji:"🔴",name:"الأحمر"},
+ {emoji:"🟢",name:"الأخضر"},{emoji:"🟡",name:"الأصفر"}
+];
 function buildAssemblySteps(){
-  const steps=[{type:"welcome"}];
+  const steps=[{type:"welcome"},{type:"teamSetup"}];
   ANIMAL_SOUNDS.forEach((a,i)=>steps.push({type:"animal",i:i,a:a}));
   LETTERS.forEach((x,i)=>steps.push({type:"letter",i:i,x:x}));
   steps.push({type:"activity"});
@@ -3115,9 +3119,38 @@ function startAssembly(){
   const h=document.querySelector("header"), f=document.querySelector("footer");
   if(h)h.style.display="none";
   if(f)f.style.display="none";
-  window._asm={steps:buildAssemblySteps(),idx:0,revealed:false};
+  window._asm={steps:buildAssemblySteps(),idx:0,revealed:false,teamCount:2,scores:[0,0]};
   document.addEventListener("keydown",asmKeyHandler);
   renderAssembly();
+}
+function asmSetTeams(n){
+  const st=window._asm; if(!st)return;
+  st.teamCount=n; st.scores=new Array(n).fill(0);
+  renderAssembly();
+}
+function asmAward(teamIdx){
+  const st=window._asm; if(!st||teamIdx>=st.teamCount)return;
+  st.scores[teamIdx]++;
+  renderAssembly();
+  confetti();
+}
+function asmScoreboardHtml(){
+  const st=window._asm;
+  let cells="";
+  for(let i=0;i<st.teamCount;i++){
+    const t=ASM_TEAMS[i];
+    cells+='<span style="margin:0 10px;font-size:1.1rem;color:#fff">'+t.emoji+' '+toArNum(st.scores[i]||0)+'</span>';
+  }
+  return '<div style="position:absolute;top:14px;right:50%;transform:translateX(50%);background:rgba(0,0,0,.25);border-radius:20px;padding:6px 16px;white-space:nowrap">'+cells+'</div>';
+}
+function asmAwardButtonsHtml(){
+  const st=window._asm;
+  let btns="";
+  for(let i=0;i<st.teamCount;i++){
+    const t=ASM_TEAMS[i];
+    btns+='<button onclick="asmAward('+i+')" style="font-size:1.1rem;padding:10px 18px;margin:4px;border:none;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer">'+t.emoji+' نقطة لـ'+t.name+'</button>';
+  }
+  return '<div style="margin-top:14px">'+btns+'</div>';
 }
 function asmExit(){
   const h=document.querySelector("header"), f=document.querySelector("footer");
@@ -3133,6 +3166,11 @@ function asmKeyHandler(e){
   if(e.key==="ArrowRight"){e.preventDefault();asmNext();return;}
   if(e.key==="ArrowLeft"){e.preventDefault();asmPrev();return;}
   if(e.key===" "||e.key==="Enter"){e.preventDefault();asmPrimary();return;}
+  if(["1","2","3","4"].includes(e.key)){
+    const st=window._asm, step=st.steps[st.idx], n=+e.key-1;
+    if((step.type==="animal"||step.type==="letter")&&st.revealed&&n<st.teamCount){asmAward(n);}
+    return;
+  }
 }
 function asmPrimary(){
   const st=window._asm; if(!st)return;
@@ -3167,11 +3205,24 @@ function asmStepHtml(){
   const exitBtn='<button onclick="asmExit()" style="position:absolute;top:8px;right:14px;background:none;border:none;color:#fff;font-size:1.8rem;cursor:pointer;opacity:.7">✕</button>';
   const prevBtn=st.idx>0?'<button onclick="asmPrev()" style="position:absolute;bottom:46px;right:20px;background:none;border:2px solid rgba(255,255,255,.3);color:#fff;border-radius:12px;padding:8px 16px;font-size:1rem;cursor:pointer">◀ رجوع</button>':"";
   let body="";
+  const scoreboard=(step.type==="welcome"||step.type==="teamSetup")?"":asmScoreboardHtml();
   if(step.type==="welcome"){
     body='<div style="font-size:7rem">⭐</div>'+
     '<h1 style="font-size:3rem;color:#fff;margin:10px 0">أهلاً يا أبطال! 🎉</h1>'+
     '<p style="font-size:1.6rem;color:#ffe9a8">أنا نجّوم! جاهزين نلعب ونتعلم سوا؟</p>'+
     '<button class="btn green" style="font-size:1.8rem;padding:18px 46px;margin-top:24px" onclick="asmNext()">🚀 يلا نبدأ</button>';
+  }else if(step.type==="teamSetup"){
+    let teamBtns="";
+    for(let n=2;n<=4;n++){
+      const sel=st.teamCount===n?"outline:3px solid #ffd54f;":"";
+      teamBtns+='<button onclick="asmSetTeams('+n+')" style="font-size:1.3rem;padding:12px 26px;margin:6px;border:none;border-radius:14px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;'+sel+'">'+toArNum(n)+' فرق</button>';
+    }
+    let badges="";
+    for(let i=0;i<st.teamCount;i++)badges+='<span style="font-size:2.2rem;margin:0 8px">'+ASM_TEAMS[i].emoji+'</span>';
+    body='<h2 style="font-size:2.2rem;color:#fff">🏁 كم فريق عندنا اليوم؟</h2>'+
+    '<div style="margin:14px 0">'+teamBtns+'</div>'+
+    '<div style="margin:10px 0 20px">'+badges+'</div>'+
+    '<button class="btn green" style="font-size:1.6rem;padding:16px 40px" onclick="asmNext()">▶ ابدأ المسابقة</button>';
   }else if(step.type==="animal"){
     const a=step.a;
     if(!st.revealed){
@@ -3182,7 +3233,8 @@ function asmStepHtml(){
     }else{
       body='<div style="font-size:9rem">'+a.emoji+'</div>'+
       '<h1 style="font-size:3.4rem;color:#fff">'+a.name+'</h1>'+
-      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:18px" onclick="asmNext()">➡️ التالي</button>';
+      asmAwardButtonsHtml()+
+      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:10px" onclick="asmNext()">➡️ التالي</button>';
     }
   }else if(step.type==="letter"){
     const x=step.x;
@@ -3195,7 +3247,8 @@ function asmStepHtml(){
       '<h1 style="font-size:2.6rem;color:#fff">'+x.name+'</h1>'+
       '<div style="font-size:4rem">'+x.emoji+'</div>'+
       '<div style="font-size:1.8rem;color:#ffe9a8">'+x.word+'</div>'+
-      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:18px" onclick="asmNext()">➡️ التالي</button>';
+      asmAwardButtonsHtml()+
+      '<button class="btn blue" style="font-size:1.4rem;padding:14px 34px;margin-top:10px" onclick="asmNext()">➡️ التالي</button>';
     }
   }else if(step.type==="activity"){
     body='<div style="font-size:7rem">🤸</div>'+
@@ -3203,14 +3256,23 @@ function asmStepHtml(){
     '<p style="font-size:1.6rem;color:#ffe9a8;max-width:700px;margin:14px auto">قفوا كلكم! اقفزوا ٥ مرات، صفّقوا ٥ مرات، ولفّوا حول أنفسكم مرة وحدة!</p>'+
     '<button class="btn green" style="font-size:1.6rem;padding:16px 40px;margin-top:20px" onclick="asmNext()">➡️ التالي</button>';
   }else if(step.type==="outro"){
+    const ranked=st.scores.map((s,i)=>({i:i,s:s})).sort((a,b)=>b.s-a.s);
+    const top=ranked[0]?ranked[0].s:0;
+    let rows="";
+    ranked.forEach(r=>{
+      const t=ASM_TEAMS[r.i];
+      const crown=r.s===top&&top>0?"👑 ":"";
+      rows+='<div style="font-size:1.5rem;color:#fff;margin:6px 0">'+crown+t.emoji+' '+t.name+': '+toArNum(r.s)+'</div>';
+    });
     body='<div style="font-size:7rem">🏆</div>'+
     '<h1 style="font-size:3rem;color:#fff">أحسنتم يا أبطال! 🎉</h1>'+
-    '<p style="font-size:1.6rem;color:#ffe9a8">جربوا كتاب "لغتي الممتعة" بنفسكم قريبًا!</p>'+
+    '<div style="margin:14px 0">'+rows+'</div>'+
+    '<p style="font-size:1.4rem;color:#ffe9a8">جربوا كتاب "لغتي الممتعة" بنفسكم قريبًا!</p>'+
     '<button class="btn blue" style="font-size:1.6rem;padding:16px 40px;margin-top:20px" onclick="asmExit()">🏠 إنهاء العرض</button>';
   }
-  const hint='<div style="position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#cbd5e1;font-size:.85rem;opacity:.6">فراغ = التالي &nbsp;|&nbsp; ◀ رجوع &nbsp;|&nbsp; Esc خروج</div>';
+  const hint='<div style="position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#cbd5e1;font-size:.85rem;opacity:.6">فراغ = التالي &nbsp;|&nbsp; ◀ رجوع &nbsp;|&nbsp; ١-٤ نقطة لفريق &nbsp;|&nbsp; Esc خروج</div>';
   return '<div style="position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#1a1140,#3b1f6b);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px">'+
-   progress+exitBtn+prevBtn+'<div>'+body+'</div>'+hint+'</div>';
+   progress+scoreboard+exitBtn+prevBtn+'<div>'+body+'</div>'+hint+'</div>';
 }
 function renderAssembly(){
   app.innerHTML=asmStepHtml();
