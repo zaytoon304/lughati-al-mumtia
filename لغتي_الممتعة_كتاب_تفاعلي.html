@@ -3363,9 +3363,9 @@ function renderAssembly(){
   app.innerHTML=asmStepHtml();
   const st=window._asm, step=st.steps[st.idx];
   if(step.type==="animal"&&!st.revealed){
-    setTimeout(()=>playOrSpeak("sound_"+step.i,step.a.sound),300);
+    playOrSpeak("sound_"+step.i,step.a.sound);
   }else if(step.type==="welcome"){
-    setTimeout(()=>speak("أهلاً يا أبطال! أنا نجّوم! جاهزين نلعب ونتعلم سوا؟"),300);
+    speak("أهلاً يا أبطال! أنا نجّوم! جاهزين نلعب ونتعلم سوا؟");
   }
 }
 /* ====================== التشغيل ====================== */
